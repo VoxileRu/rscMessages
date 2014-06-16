@@ -1,0 +1,13 @@
+name: ${project.artifactId}
+main: ${project.groupId}.${project.artifactId}.Plugin
+version: ${project.version}
+author: SimSonic
+website: http://www.voxile.ru
+commands:
+  rscm:
+    description: ${project.artifactId} command hub
+    usage: /<command> do what?
+permissions:
+  rscm.admin:
+    description: Access to all functions
+    default: op
