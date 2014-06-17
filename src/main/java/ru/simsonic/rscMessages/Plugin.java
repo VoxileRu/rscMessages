@@ -33,10 +33,10 @@ public final class Plugin extends JavaPlugin
 				// NEWEST VERSION
 				break;
 			default:
-				// UNSUPPORTED VERSION
+				// UNSUPPORTED VERSION?
 				break;
 		}
-		consoleLog.log(Level.INFO, "[rscMessages] Plugin has been loaded.");
+		consoleLog.log(Level.INFO, "[rscm] rscMessages has been loaded.");
 	}
 	@Override
 	public void onEnable()
@@ -59,16 +59,17 @@ public final class Plugin extends JavaPlugin
 		{
 			metrics = new MetricsLite(this);
 			metrics.start();
-			consoleLog.info("[rscMessages] Metrics enabled.");
+			consoleLog.info("[rscm] Metrics enabled.");
 		} catch(IOException ex) {
-			consoleLog.log(Level.INFO, "[rscMessages][Metrics] Exception:\n{0}", ex.getLocalizedMessage());
+			consoleLog.log(Level.INFO, "[rscm][Metrics] Exception:\n{0}", ex.getLocalizedMessage());
 		}
 		// Fetch lists and schedule them
+		connection.StartAndDeploy();
 		lists.putAll(connection.fetch());
 		scheduleBroadcastTasks();
 		scheduleAutoFetchTask();
 		// Done
-		consoleLog.log(Level.INFO, "[rscMessages] Plugin has been successfully enabled.");
+		consoleLog.log(Level.INFO, "[rscm] rscMessages has been successfully enabled.");
 	}
 	@Override
 	public void onDisable()
@@ -79,39 +80,42 @@ public final class Plugin extends JavaPlugin
 		lists.clear();
 		saveConfig();
 		metrics = null;
-		consoleLog.info("[rscMessages] Plugin has been disabled.");
+		consoleLog.info("[rscm] rscMessages has been disabled.");
 	}
 	private void scheduleBroadcastTasks()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
 		for(final RowList list : lists.values())
 		{
-			list.task = scheduler.scheduleSyncRepeatingTask(this, new Runnable()
+			final int delay_ticks = 20 * list.delay_sec;
+			scheduler.scheduleSyncRepeatingTask(this, new Runnable()
 			{
 				@Override
 				public void run()
 				{
 					broadcastList(list);
 				}
-			}, 0, 20 * list.delay_sec);
+			}, delay_ticks, delay_ticks);
 		}
 	}
 	private void scheduleAutoFetchTask()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.scheduleSyncRepeatingTask(this, new Runnable()
+		scheduler.scheduleSyncDelayedTask(this, new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				scheduler.cancelAllTasks();
 				for(RowList list : lists.values())
 					list.messages.clear();
 				lists.clear();
 				lists.putAll(connection.fetch());
+				getServer().getConsoleSender().sendMessage("[rscm] Message lists have been fetched from database.");
+				scheduler.cancelAllTasks();
 				scheduleBroadcastTasks();
+				scheduler.scheduleSyncDelayedTask(Plugin.this, this, autoFetchInterval);
 			}
-		}, 0, autoFetchInterval);
+		}, autoFetchInterval);
 	}
 	private void broadcastList(RowList list)
 	{
@@ -126,7 +130,7 @@ public final class Plugin extends JavaPlugin
 		for(Player player : getServer().getOnlinePlayers())
 			if(player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase()))
 				player.sendMessage(text);
-		getServer().getConsoleSender().sendMessage("[rscMessages] Broadcasting '" + message.rowList.name + "': " + text);
+		getServer().getConsoleSender().sendMessage("[rscm] Broadcasting '" + message.rowList.name + "': " + text);
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -207,7 +211,7 @@ public final class Plugin extends JavaPlugin
 					reloadConfig();
 					getPluginLoader().disablePlugin(this);
 					getPluginLoader().enablePlugin(this);
-					getServer().getConsoleSender().sendMessage("[rscMessages] Plugin has been reloaded.");
+					getServer().getConsoleSender().sendMessage("[rscm] rscMessages has been reloaded.");
 				}
 				return;
 		}

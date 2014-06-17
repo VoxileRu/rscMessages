@@ -17,6 +17,7 @@ public class Commands
 		final ArrayList<String> answers = new ArrayList<>();
 		if(list == null)
 		{
+			// Enum lists
 			answers.add("Known message lists are:");
 			final ArrayList<String> keys = new ArrayList<>(plugin.lists.keySet());
 			Collections.sort(keys);
@@ -28,6 +29,7 @@ public class Commands
 				}
 			throw new CommandAnswerException(answers);
 		}
+		// Enum messages of list
 		list = list.toLowerCase();
 		if(!viewPermission(sender, list))
 			notEnoughPermissions();
@@ -81,6 +83,20 @@ public class Commands
 			return true;
 		if(sender.hasPermission("rscm.edit." + list))
 			return true;
+		if(sender.hasPermission("rscm.setup." + list))
+			return true;
+		return sender.hasPermission("rscm.admin");
+	}
+	private boolean editPermission(CommandSender sender, String list)
+	{
+		if(sender.hasPermission("rscm.edit." + list))
+			return true;
+		if(sender.hasPermission("rscm.setup." + list))
+			return true;
+		return sender.hasPermission("rscm.admin");
+	}
+	private boolean setupPermission(CommandSender sender, String list)
+	{
 		if(sender.hasPermission("rscm.setup." + list))
 			return true;
 		return sender.hasPermission("rscm.admin");

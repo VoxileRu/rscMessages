@@ -1,7 +1,6 @@
 package ru.simsonic.rscMessages;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -13,6 +12,11 @@ public class Database extends ConnectionMySQL
 	Database(Plugin plugin)
 	{
 		this.plugin = plugin;
+	}
+	public void StartAndDeploy()
+	{
+		if(isConnected())
+			executeUpdate(loadResourceSQLT("Deploy"));
 	}
 	public Map<String, RowList> fetch()
 	{

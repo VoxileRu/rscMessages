@@ -14,7 +14,6 @@ public class RowList
 	// Internal
 	ArrayList<RowMessage> messages = new ArrayList<>();
 	private static final Random rnd = new Random();
-	int task;
 	public RowMessage getNextMessage(long currentTime)
 	{
 		if(messages.isEmpty())
