@@ -95,18 +95,15 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.6.4-R2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mcstats.bukkit</groupId>
-			<artifactId>metrics-lite</artifactId>
-			<version>R6</version>
-			<scope>compile</scope>
+			<version>1.7.5-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>ru.simsonic</groupId>
 			<artifactId>rscAPI</artifactId>
 			<version>1.2.1</version>
+			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
 	</dependencies>
