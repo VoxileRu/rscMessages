@@ -1,4 +1,6 @@
 package ru.simsonic.rscMessages;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import org.bukkit.command.CommandSender;
 import ru.simsonic.utilities.CommandAnswerException;
 
@@ -10,19 +12,24 @@ public class Commands
 		this.plugin = plugin;
 	}
 	// rscm list [list]
-	void list(CommandSender sender, String list)
+	void list(CommandSender sender, String list) throws CommandAnswerException
 	{
+		final ArrayList<String> answers = new ArrayList<>();
 		if(list == null)
 		{
-			for(String known : plugin.lists.keySet())
-			{
-				if(sender.hasPermission("rscm.edit." + known))
-				{
-					RowList row = plugin.lists.get(known);
-				}
-			}
-		} else {
+			answers.add("Known message lists are:");
+			for(Entry<String, RowList> known : plugin.lists.entrySet())
+				if(viewPermission(sender, known.getKey()))
+					answers.add((known.getValue().enabled ? "{_LG}" : "{_LR}") + known.getKey());
+			throw new CommandAnswerException(answers);
 		}
+		list = list.toLowerCase();
+		if(!viewPermission(sender, list))
+			notEnoughPermissions();
+		answers.add("List messages are:");
+		final RowList row = plugin.lists.get(list);
+		for(RowMessage message : row.messages)
+			answers.add((message.enabled ? "{_LG}on: {_R}" : "{_LR}off: {_R}") + row.prefix + message.text);
 	}
 	// rscm add <list> <text>
 	void add(CommandSender sender, String list, String text)
@@ -61,6 +68,16 @@ public class Commands
 		{
 		} else {
 		}
+	}
+	private boolean viewPermission(CommandSender sender, String list)
+	{
+		if(sender.hasPermission("rscm.receive." + list))
+			return true;
+		if(sender.hasPermission("rscm.edit." + list))
+			return true;
+		if(sender.hasPermission("rscm.setup." + list))
+			return true;
+		return sender.hasPermission("rscm.admin");
 	}
 	void notEnoughPermissions() throws CommandAnswerException
 	{

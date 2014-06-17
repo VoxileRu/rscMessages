@@ -27,6 +27,8 @@ public class Database extends ConnectionMySQL
 				list.random = rsLists.getBoolean("random");
 				list.delay_sec = rsLists.getInt("delay_sec");
 				list.prefix = rsLists.getString("prefix");
+				if(list.prefix == null)
+					list.prefix = "";
 				result.put(list.name.toLowerCase(), list);
 			}
 			rsLists.close();

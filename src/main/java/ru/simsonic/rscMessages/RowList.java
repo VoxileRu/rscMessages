@@ -1,7 +1,6 @@
 package ru.simsonic.rscMessages;
 import java.util.ArrayList;
 import java.util.Random;
-import org.bukkit.scheduler.BukkitTask;
 
 public class RowList
 {
@@ -15,7 +14,7 @@ public class RowList
 	// Internal
 	ArrayList<RowMessage> messages = new ArrayList<>();
 	private static final Random rnd = new Random();
-	BukkitTask task;
+	int task;
 	public RowMessage getNextMessage(long currentTime)
 	{
 		if(messages.isEmpty())

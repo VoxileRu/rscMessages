@@ -22,6 +22,7 @@ public final class Plugin extends JavaPlugin
 	private final Commands commands = new Commands(this);
 	private MetricsLite metrics;
 	final HashMap<String, RowList> lists = new HashMap<>();
+	private int autoFetchInterval = 20 * 600;
 	@Override
 	public void onLoad()
 	{
@@ -42,6 +43,7 @@ public final class Plugin extends JavaPlugin
 	{
 		// Read settings 
 		reloadConfig();
+		autoFetchInterval = 20 * getConfig().getInt("settings.fetch-interval-sec", 600);
 		// Setup connection
 		final String hostname = getConfig().getString("settings.connection.hostname", "localhost:3306");
 		final String username = getConfig().getString("settings.connection.username", "user");
@@ -63,33 +65,53 @@ public final class Plugin extends JavaPlugin
 		}
 		// Fetch lists and schedule them
 		lists.putAll(connection.fetch());
-		scheduleBroadcasts();
+		scheduleBroadcastTasks();
+		scheduleAutoFetchTask();
 		// Done
 		consoleLog.log(Level.INFO, "[rscMessages] Plugin has been successfully enabled.");
 	}
 	@Override
 	public void onDisable()
 	{
+		getServer().getScheduler().cancelAllTasks();
+		for(RowList list : lists.values())
+			list.messages.clear();
+		lists.clear();
 		saveConfig();
 		metrics = null;
 		consoleLog.info("[rscMessages] Plugin has been disabled.");
 	}
-	private void scheduleBroadcasts()
+	private void scheduleBroadcastTasks()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
 		for(final RowList list : lists.values())
 		{
-			list.task = scheduler.runTaskLater(this, new Runnable()
+			list.task = scheduler.scheduleSyncRepeatingTask(this, new Runnable()
 			{
 				@Override
 				public void run()
 				{
 					broadcastList(list);
-					// Resetup itself again
-					list.task = scheduler.runTaskLater(Plugin.this, this, 20 * list.delay_sec);
 				}
-			}, 20 * list.delay_sec);
+			}, 0, 20 * list.delay_sec);
 		}
+	}
+	private void scheduleAutoFetchTask()
+	{
+		final BukkitScheduler scheduler = getServer().getScheduler();
+		scheduler.scheduleSyncRepeatingTask(this, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				scheduler.cancelAllTasks();
+				for(RowList list : lists.values())
+					list.messages.clear();
+				lists.clear();
+				lists.putAll(connection.fetch());
+				scheduleBroadcastTasks();
+			}
+		}, 0, autoFetchInterval);
 	}
 	private void broadcastList(RowList list)
 	{
