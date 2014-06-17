@@ -78,7 +78,6 @@ public class Commands
 			{
 				case "enabled":
 					plugin.connection.setMessageEnabled(message.id, Boolean.parseBoolean(value));
-					message.enabled = Boolean.parseBoolean(value);
 					break;
 				default:
 					throw new CommandAnswerException("Valid option is: {_R}enabled.");
@@ -90,25 +89,21 @@ public class Commands
 			{
 				case "enabled":
 					plugin.connection.setListEnabled(list, Boolean.parseBoolean(value));
-					row.enabled = Boolean.parseBoolean(value);
 					break;
 				case "random":
 					plugin.connection.setListRandom(list, Boolean.parseBoolean(value));
-					row.random = Boolean.parseBoolean(value);
 					break;
 				case "delay":
 					plugin.connection.setListDelay(list, Integer.parseInt(value));
-					row.delay_sec = Integer.parseInt(value);
 					break;
 				case "prefix":
 					plugin.connection.setListPrefix(list, value);
-					row.prefix = value;
 					break;
 				default:
 					throw new CommandAnswerException("Valid options are: {_R}enabled, random, delay, prefix.");
 			}
 		}
-		plugin.rescheduleTaskTimers();
+		plugin.fetchAndSchedule();
 		throw new CommandAnswerException("{_LG}Done.");
 	}
 	// rscm broadcast <list> [#]
