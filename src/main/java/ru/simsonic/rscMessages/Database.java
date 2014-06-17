@@ -91,7 +91,7 @@ public class Database extends ConnectionMySQL
 	}
 	public void setListPrefix(String list, String prefix)
 	{
-		setListOption(list, "prefix", (prefix != null) ? prefix : "''");
+		setListOption(list, "prefix", (prefix != null) ? "'" + prefix + "'" : "''");
 	}
 	public void addMessage(String list, String message)
 	{

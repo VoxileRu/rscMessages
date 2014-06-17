@@ -64,7 +64,7 @@ public class Commands
 		}
 	}
 	// rscm set <list> <option> [#] <value>
-	void set(CommandSender sender, String list, String option, int id, String value) throws CommandAnswerException
+	void set(CommandSender sender, String list, int id, String option, String value) throws CommandAnswerException
 	{
 		final RowList row = getList(list);
 		if(option == null)

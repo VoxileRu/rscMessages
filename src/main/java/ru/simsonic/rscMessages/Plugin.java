@@ -159,7 +159,7 @@ public final class Plugin extends JavaPlugin
 			throw new CommandAnswerException("{MAGENTA}rscMessages {GRAY}" + getDescription().getVersion() + "{MAGENTA} by SimSonic.");
 		final ArrayList<String> result = new ArrayList<>();
 		final String command = args[0].toLowerCase();
-		args = Arrays.copyOfRange(args, 1, (args.length > 5) ? args.length - 1 : 4);
+		args = Arrays.copyOfRange(args, 1, (args.length >= 5) ? args.length : 5);
 		switch(command)
 		{
 			case "l":
@@ -168,7 +168,7 @@ public final class Plugin extends JavaPlugin
 				return;
 			case "a":
 			case "add":
-				String add_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length - 1), " ");
+				String add_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " ");
 				commands.add(sender, args[0], add_text);
 				return;
 			case "e":
@@ -178,9 +178,9 @@ public final class Plugin extends JavaPlugin
 				try
 				{
 					edit_id = Integer.parseInt(args[1]);
-					edit_text = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length - 2), " ");
+					edit_text = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				} catch(NumberFormatException ex) {
-					edit_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length - 1), " ");
+					edit_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " ");
 				}
 				commands.edit(sender, args[0], edit_id, edit_text);
 				return;
@@ -194,15 +194,22 @@ public final class Plugin extends JavaPlugin
 				}
 				commands.remove(sender, args[0], remove_id);
 				return;
+			// rscm set <list> [#] <option> <value>
 			case "s":
 			case "set":
 				int set_id = -1;
+				String set_option;
+				String set_text;
 				try
 				{
 					set_id = Integer.parseInt(args[1]);
+					set_option = args[2];
+					set_text = LanguageUtility.glue(Arrays.copyOfRange(args, 3, args.length), " ");
 				} catch(NumberFormatException ex) {
+					set_option = args[1];
+					set_text = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				}
-				commands.set(sender, args[0], args[1], set_id, args[3]);
+				commands.set(sender, args[0], set_id, set_option, set_text);
 				return;
 			case "b":
 			case "broadcast":
