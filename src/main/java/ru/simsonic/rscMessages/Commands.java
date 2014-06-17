@@ -36,7 +36,7 @@ public class Commands
 		answers.add("List messages are:");
 		final RowList row = plugin.lists.get(list);
 		for(RowMessage message : row.messages)
-			answers.add((message.enabled ? "{_LG}on: {_R}" : "{_LR}off: {_R}") + row.prefix + message.text);
+			answers.add((message.enabled ? "{_LG}#" : "{_LR}#") + message.id + "{_R}: " + row.prefix + message.text);
 		throw new CommandAnswerException(answers);
 	}
 	// rscm add <list> <text>
@@ -70,12 +70,27 @@ public class Commands
 			throw new CommandAnswerException("{RED}List should be specified");
 	}
 	// rscm broadcast <list> [#]
-	void broadcast(CommandSender sender, String list, int id)
+	void broadcast(CommandSender sender, String list, int id) throws CommandAnswerException
 	{
-		if(list != null)
+		if(list == null)
+			throw new CommandAnswerException("{RED}Please specify the list to broadcast.");
+		list = list.toLowerCase();
+		if(!setupPermission(sender, list))
+			notEnoughPermissions();
+		final RowList row = plugin.lists.get(list);
+		if(row == null)
+			throw new CommandAnswerException("{RED}No such list.");
+		if(id >= 0)
 		{
-		} else {
-		}
+			for(RowMessage message : row.messages)
+				if(message.id == id)
+				{
+					plugin.broadcastMessage(message);
+					return;
+				}
+			throw new CommandAnswerException("{RED}No such message id.");
+		} else
+			plugin.broadcastList(row);
 	}
 	private boolean viewPermission(CommandSender sender, String list)
 	{

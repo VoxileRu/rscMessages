@@ -117,13 +117,13 @@ public final class Plugin extends JavaPlugin
 			}
 		}, autoFetchInterval);
 	}
-	private void broadcastList(RowList list)
+	protected void broadcastList(RowList list)
 	{
 		final RowMessage message = list.getNextMessage(getServer().getWorlds().get(0).getTime());
 		if(message != null)
 			broadcastMessage(message);
 	}
-	private void broadcastMessage(RowMessage message)
+	protected void broadcastMessage(RowMessage message)
 	{
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 		final String text = LanguageUtility.processStringStatic(message.rowList.prefix + message.text);
@@ -158,13 +158,16 @@ public final class Plugin extends JavaPlugin
 		args = Arrays.copyOfRange(args, 1, (args.length > 5) ? args.length - 1 : 4);
 		switch(command)
 		{
+			case "l":
 			case "list":
 				commands.list(sender, args[0]);
 				return;
+			case "a":
 			case "add":
 				String add_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length - 1), " ");
 				commands.add(sender, args[0], add_text);
 				return;
+			case "e":
 			case "edit":
 				int edit_id = -1;
 				String edit_text;
@@ -177,6 +180,7 @@ public final class Plugin extends JavaPlugin
 				}
 				commands.edit(sender, args[0], edit_id, edit_text);
 				return;
+			case "r":
 			case "remove":
 				int remove_id = -1;
 				try
@@ -186,6 +190,7 @@ public final class Plugin extends JavaPlugin
 				}
 				commands.remove(sender, args[0], remove_id);
 				return;
+			case "s":
 			case "set":
 				int set_id = -1;
 				try
@@ -195,6 +200,7 @@ public final class Plugin extends JavaPlugin
 				}
 				commands.set(sender, args[0], args[1], set_id, args[3]);
 				return;
+			case "b":
 			case "broadcast":
 				int broadcast_id = -1;
 				try
