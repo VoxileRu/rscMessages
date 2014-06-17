@@ -66,20 +66,56 @@ public class Commands
 	// rscm set <list> <option> [#] <value>
 	void set(CommandSender sender, String list, String option, int id, String value) throws CommandAnswerException
 	{
-		if(list == null)
-			throw new CommandAnswerException("{RED}List should be specified");
+		final RowList row = getList(list);
+		if(option == null)
+			option = "";
+		if(id > 0)
+		{
+			if(!editPermission(sender, list))
+				notEnoughPermissions();
+			final RowMessage msg = getMessage(row, id);
+			switch(option.toLowerCase())
+			{
+				case "enabled":
+					plugin.connection.setMessageEnabled(msg.id, Boolean.parseBoolean(value));
+					break;
+				default:
+					throw new CommandAnswerException("{_LR}Valid option is: {_R}enabled.");
+			}
+		} else {
+			if(!setupPermission(sender, list))
+				notEnoughPermissions();
+			switch(option.toLowerCase())
+			{
+				case "enabled":
+					plugin.connection.setListEnabled(list, Boolean.parseBoolean(value));
+					break;
+				case "random":
+					plugin.connection.setListRandom(list, Boolean.parseBoolean(value));
+					break;
+				case "delay":
+					plugin.connection.setListDelay(list, Integer.parseInt(value));
+					break;
+				case "prefix":
+					plugin.connection.setListPrefix(list, value);
+					break;
+				default:
+					throw new CommandAnswerException("{_LR}Valid options are: {_R}enabled, random, delay, prefix.");
+			}
+		}
+		throw new CommandAnswerException("{_LR}Done.");
 	}
 	// rscm broadcast <list> [#]
 	void broadcast(CommandSender sender, String list, int id) throws CommandAnswerException
 	{
 		if(list == null)
-			throw new CommandAnswerException("{RED}Please specify the list to broadcast.");
+			throw new CommandAnswerException("{_LR}List should be specified.");
 		list = list.toLowerCase();
 		if(!setupPermission(sender, list))
 			notEnoughPermissions();
 		final RowList row = plugin.lists.get(list);
 		if(row == null)
-			throw new CommandAnswerException("{RED}No such list.");
+			throw new CommandAnswerException("{_LR}No such list.");
 		if(id >= 0)
 		{
 			for(RowMessage message : row.messages)
@@ -88,12 +124,13 @@ public class Commands
 					plugin.broadcastMessage(message);
 					return;
 				}
-			throw new CommandAnswerException("{RED}No such message id.");
+			throw new CommandAnswerException("{_LR}No such message id.");
 		} else
 			plugin.broadcastList(row);
 	}
 	private boolean viewPermission(CommandSender sender, String list)
 	{
+		list = list.toLowerCase();
 		if(sender.hasPermission("rscm.receive." + list))
 			return true;
 		if(sender.hasPermission("rscm.edit." + list))
@@ -104,6 +141,7 @@ public class Commands
 	}
 	private boolean editPermission(CommandSender sender, String list)
 	{
+		list = list.toLowerCase();
 		if(sender.hasPermission("rscm.edit." + list))
 			return true;
 		if(sender.hasPermission("rscm.setup." + list))
@@ -112,12 +150,31 @@ public class Commands
 	}
 	private boolean setupPermission(CommandSender sender, String list)
 	{
+		list = list.toLowerCase();
 		if(sender.hasPermission("rscm.setup." + list))
 			return true;
 		return sender.hasPermission("rscm.admin");
 	}
-	void notEnoughPermissions() throws CommandAnswerException
+	private void notEnoughPermissions() throws CommandAnswerException
 	{
 		throw new CommandAnswerException("You have not permission to do that!");
+	}
+	private RowList getList(String list) throws CommandAnswerException
+	{
+		if(list == null || "".equals(list))
+			throw new CommandAnswerException("{_LR}List should be specified.");
+		final RowList result = plugin.lists.get(list.toLowerCase());
+		if(result == null)
+			throw new CommandAnswerException("{_LR}No such list.");
+		return result;
+	}
+	private RowMessage getMessage(RowList list, int id) throws CommandAnswerException
+	{
+		if(id <= 0)
+			throw new CommandAnswerException("{_LR}Message id should be specified.");
+		for(RowMessage message : list.messages)
+			if(message.id == id)
+				return message;
+		throw new CommandAnswerException("{_LR}No such message id.");
 	}
 }

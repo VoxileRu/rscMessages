@@ -64,4 +64,51 @@ public class Database extends ConnectionMySQL
 		}
 		return result;
 	}
+	public void addList(String list)
+	{
+		// This place should include some security filters...
+		setupQueryTemplate("{LIST}", list);
+		executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}lists` (`name`) VALUES ('');");
+	}
+	private void setListOption(String list, String option, String value)
+	{
+		setupQueryTemplate("{LIST}", list);
+		setupQueryTemplate("{OPTION}", option);
+		setupQueryTemplate("{VALUE}", value);
+		executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}lists` SET `{OPTION}` = {VALUE} WHERE `name` = '{LIST}';");
+	}
+	public void setListEnabled(String list, boolean value)
+	{
+		setListOption(list, "enabled", value ? "b'1'" : "b'0'");
+	}
+	public void setListRandom(String list, boolean value)
+	{
+		setListOption(list, "random", value ? "b'1'" : "b'0'");
+	}
+	public void setListDelay(String list, int delay)
+	{
+		setListOption(list, "delay_sec", "'" + delay + "'");
+	}
+	public void setListPrefix(String list, String prefix)
+	{
+		setListOption(list, "prefix", (prefix != null) ? prefix : "''");
+	}
+	public void addMessage(String list, String message)
+	{
+		// This place should include some security filters...
+		setupQueryTemplate("{LIST}", list);
+		setupQueryTemplate("{MESSAGE}", message);
+		executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}messages` (`list`, `text`) VALUES ('{LIST}', '{MESSAGE}');");
+	}
+	private void setMessageOption(int id, String option, String value)
+	{
+		setupQueryTemplate("{ID}", Integer.toString(id));
+		setupQueryTemplate("{OPTION}", option);
+		setupQueryTemplate("{VALUE}", value);
+		executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}messages` SET `{OPTION}` = {VALUE} WHERE `id` = '{ID}';");
+	}
+	public void setMessageEnabled(int id, boolean value)
+	{
+		setMessageOption(id, "enabled", value ? "b'1'" : "b'0'");
+	}
 }

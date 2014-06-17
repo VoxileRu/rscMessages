@@ -18,8 +18,8 @@ public final class Plugin extends JavaPlugin
 {
 	private static final Logger consoleLog = Logger.getLogger("Minecraft");
 	private static final String chatPrefix = "{_YL}[rscm] {GOLD}";
-	private final Database connection = new Database(this);
-	private final Commands commands = new Commands(this);
+	protected final Database connection = new Database(this);
+	protected final Commands commands = new Commands(this);
 	private MetricsLite metrics;
 	final HashMap<String, RowList> lists = new HashMap<>();
 	private int autoFetchInterval = 20 * 600;
