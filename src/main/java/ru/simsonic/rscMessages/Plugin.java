@@ -65,9 +65,7 @@ public final class Plugin extends JavaPlugin
 		}
 		// Fetch lists and schedule them
 		connection.StartAndDeploy();
-		lists.putAll(connection.fetch());
-		scheduleBroadcastTasks();
-		scheduleAutoFetchTask();
+		rescheduleTaskTimers();
 		// Done
 		consoleLog.log(Level.INFO, "[rscm] rscMessages has been successfully enabled.");
 	}
@@ -98,24 +96,24 @@ public final class Plugin extends JavaPlugin
 			}, delay_ticks, delay_ticks);
 		}
 	}
-	private void scheduleAutoFetchTask()
+	private final Runnable autoFetchTask = new Runnable()
 	{
-		final BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.scheduleSyncDelayedTask(this, new Runnable()
+		@Override
+		public void run()
 		{
-			@Override
-			public void run()
-			{
-				for(RowList list : lists.values())
-					list.messages.clear();
-				lists.clear();
-				lists.putAll(connection.fetch());
-				getServer().getConsoleSender().sendMessage("[rscm] Message lists have been fetched from database.");
-				scheduler.cancelAllTasks();
-				scheduleBroadcastTasks();
-				scheduler.scheduleSyncDelayedTask(Plugin.this, this, autoFetchInterval);
-			}
-		}, autoFetchInterval);
+			rescheduleTaskTimers();
+		}
+	};
+	protected void rescheduleTaskTimers()
+	{
+		for(RowList list : lists.values())
+			list.messages.clear();
+		lists.clear();
+		lists.putAll(connection.fetch());
+		getServer().getConsoleSender().sendMessage("[rscm] Message lists have been fetched from database.");
+		getServer().getScheduler().cancelAllTasks();
+		scheduleBroadcastTasks();
+		getServer().getScheduler().scheduleSyncDelayedTask(this, autoFetchTask, autoFetchInterval);
 	}
 	protected void broadcastList(RowList list)
 	{

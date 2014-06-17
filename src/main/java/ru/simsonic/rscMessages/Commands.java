@@ -73,14 +73,15 @@ public class Commands
 		{
 			if(!editPermission(sender, list))
 				notEnoughPermissions();
-			final RowMessage msg = getMessage(row, id);
+			final RowMessage message = getMessage(row, id);
 			switch(option.toLowerCase())
 			{
 				case "enabled":
-					plugin.connection.setMessageEnabled(msg.id, Boolean.parseBoolean(value));
+					plugin.connection.setMessageEnabled(message.id, Boolean.parseBoolean(value));
+					message.enabled = Boolean.parseBoolean(value);
 					break;
 				default:
-					throw new CommandAnswerException("{_LR}Valid option is: {_R}enabled.");
+					throw new CommandAnswerException("Valid option is: {_R}enabled.");
 			}
 		} else {
 			if(!setupPermission(sender, list))
@@ -89,21 +90,26 @@ public class Commands
 			{
 				case "enabled":
 					plugin.connection.setListEnabled(list, Boolean.parseBoolean(value));
+					row.enabled = Boolean.parseBoolean(value);
 					break;
 				case "random":
 					plugin.connection.setListRandom(list, Boolean.parseBoolean(value));
+					row.random = Boolean.parseBoolean(value);
 					break;
 				case "delay":
 					plugin.connection.setListDelay(list, Integer.parseInt(value));
+					row.delay_sec = Integer.parseInt(value);
 					break;
 				case "prefix":
 					plugin.connection.setListPrefix(list, value);
+					row.prefix = value;
 					break;
 				default:
-					throw new CommandAnswerException("{_LR}Valid options are: {_R}enabled, random, delay, prefix.");
+					throw new CommandAnswerException("Valid options are: {_R}enabled, random, delay, prefix.");
 			}
 		}
-		throw new CommandAnswerException("{_LR}Done.");
+		plugin.rescheduleTaskTimers();
+		throw new CommandAnswerException("{_LG}Done.");
 	}
 	// rscm broadcast <list> [#]
 	void broadcast(CommandSender sender, String list, int id) throws CommandAnswerException
