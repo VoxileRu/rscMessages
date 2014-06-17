@@ -1,6 +1,6 @@
 package ru.simsonic.rscMessages;
 import java.util.ArrayList;
-import java.util.Map.Entry;
+import java.util.Collections;
 import org.bukkit.command.CommandSender;
 import ru.simsonic.utilities.CommandAnswerException;
 
@@ -18,9 +18,14 @@ public class Commands
 		if(list == null)
 		{
 			answers.add("Known message lists are:");
-			for(Entry<String, RowList> known : plugin.lists.entrySet())
-				if(viewPermission(sender, known.getKey()))
-					answers.add((known.getValue().enabled ? "{_LG}" : "{_LR}") + known.getKey());
+			final ArrayList<String> keys = new ArrayList<>(plugin.lists.keySet());
+			Collections.sort(keys);
+			for(String key : keys)
+				if(viewPermission(sender, key))
+				{
+					RowList row = plugin.lists.get(key);
+					answers.add((row.enabled ? "{_LG}" : "{_LR}") + key + " {GRAY}(" + row.messages.size() + ")");
+				}
 			throw new CommandAnswerException(answers);
 		}
 		list = list.toLowerCase();
@@ -30,6 +35,7 @@ public class Commands
 		final RowList row = plugin.lists.get(list);
 		for(RowMessage message : row.messages)
 			answers.add((message.enabled ? "{_LG}on: {_R}" : "{_LR}off: {_R}") + row.prefix + message.text);
+		throw new CommandAnswerException(answers);
 	}
 	// rscm add <list> <text>
 	void add(CommandSender sender, String list, String text)

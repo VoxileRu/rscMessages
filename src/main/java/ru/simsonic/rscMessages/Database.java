@@ -1,7 +1,9 @@
 package ru.simsonic.rscMessages;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import ru.simsonic.utilities.ConnectionMySQL;
 
@@ -12,11 +14,12 @@ public class Database extends ConnectionMySQL
 	{
 		this.plugin = plugin;
 	}
-	public HashMap<String, RowList> fetch()
+	public Map<String, RowList> fetch()
 	{
 		final HashMap<String, RowList> result = new HashMap<>();
-		final ResultSet rsLists = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}lists` ORDER BY `id` ASC;");
-		try
+		if(!isConnected())
+			return result;
+		try(final ResultSet rsLists = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}lists` ORDER BY `id` ASC;"))
 		{
 			while(rsLists.next())
 			{
@@ -35,8 +38,7 @@ public class Database extends ConnectionMySQL
 		} catch(SQLException ex) {
 			consoleLog.log(Level.WARNING, "[rscm] Exception in fetch(1): {0}", ex);
 		}
-		final ResultSet rsMessages = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}messages` ORDER BY `id` ASC;");
-		try
+		try(final ResultSet rsMessages = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}messages` ORDER BY `id` ASC;"))
 		{
 			while(rsMessages.next())
 			{
@@ -45,7 +47,7 @@ public class Database extends ConnectionMySQL
 				msg.enabled = rsMessages.getBoolean("enabled");
 				msg.list = rsMessages.getString("list");
 				msg.text = rsMessages.getString("text");
-				final RowList list = result.get(msg.list);
+				final RowList list = result.get(msg.list.toLowerCase());
 				if(list != null)
 				{
 					msg.rowList = list;

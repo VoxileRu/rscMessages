@@ -116,15 +116,17 @@ public final class Plugin extends JavaPlugin
 	private void broadcastList(RowList list)
 	{
 		final RowMessage message = list.getNextMessage(getServer().getWorlds().get(0).getTime());
-		broadcastMessage(message);
+		if(message != null)
+			broadcastMessage(message);
 	}
 	private void broadcastMessage(RowMessage message)
 	{
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
-		final String text = message.rowList.prefix + message.text;
+		final String text = LanguageUtility.processStringStatic(message.rowList.prefix + message.text);
 		for(Player player : getServer().getOnlinePlayers())
 			if(player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase()))
-				player.sendMessage(LanguageUtility.processStringStatic(text));
+				player.sendMessage(text);
+		getServer().getConsoleSender().sendMessage("[rscMessages] Broadcasting '" + message.rowList.name + "': " + text);
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -205,6 +207,7 @@ public final class Plugin extends JavaPlugin
 					reloadConfig();
 					getPluginLoader().disablePlugin(this);
 					getPluginLoader().enablePlugin(this);
+					getServer().getConsoleSender().sendMessage("[rscMessages] Plugin has been reloaded.");
 				}
 				return;
 		}

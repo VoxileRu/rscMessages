@@ -1,6 +1,6 @@
 settings:
   connection:
-    hostname: localhost:3306
+    hostname: localhost:3306/minecraft
     username: user
     password: pass
     prefixes: rscm_
