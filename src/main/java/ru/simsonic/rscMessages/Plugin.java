@@ -128,8 +128,12 @@ public final class Plugin extends JavaPlugin
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 		final String text = LanguageUtility.processStringStatic(message.rowList.prefix + message.text);
 		for(Player player : getServer().getOnlinePlayers())
-			if(player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase()))
+		{
+			final boolean bpa = player.hasPermission("rscm.receive.*");
+			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
+			if(bpa || bpl)
 				player.sendMessage(text);
+		}
 		getServer().getConsoleSender().sendMessage("[rscm] Broadcasting '" + message.rowList.name + "': " + text);
 	}
 	@Override
