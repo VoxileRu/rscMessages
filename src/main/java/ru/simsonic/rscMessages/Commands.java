@@ -40,28 +40,58 @@ public class Commands
 		throw new CommandAnswerException(answers);
 	}
 	// rscm add <list> <text>
-	void add(CommandSender sender, String list, String text)
+	void add(CommandSender sender, String list, String text) throws CommandAnswerException
 	{
-		if(list == null || "".equals(list))
+		if(list == null)
+			throw new CommandAnswerException("{_LR}List should be specified.");
+		if(text == null)
 		{
+			// Create new list
+			if(!setupPermission(sender, list))
+				notEnoughPermissions();
+			plugin.connection.addList(list);
 		} else {
+			// Add message to the list
+			final RowList row = getList(list);
+			if(!editPermission(sender, list))
+				notEnoughPermissions();
+			plugin.connection.addMessage(row.name, text);
 		}
+		plugin.fetchAndSchedule();
+		throw new CommandAnswerException("{_LG}Done.");
 	}
 	// rscm edit <list> <#> <new text>
-	void edit(CommandSender sender, String list, int id, String text)
+	void edit(CommandSender sender, String list, int id, String text) throws CommandAnswerException
 	{
-		if(list == null || "".equals(list))
-		{
-		} else {
-		}
+		final RowList row = getList(list);
+		if(!editPermission(sender, list))
+			notEnoughPermissions();
+		final RowMessage message = getMessage(row, id);
+		if(text == null)
+			throw new CommandAnswerException("{_LR}Please enter text for the message.");
+		// Update message text
+		plugin.connection.editMessage(message.id, text);
+		plugin.fetchAndSchedule();
+		throw new CommandAnswerException("{_LG}Done.");
 	}
 	// rscm remove <list> [#]
-	void remove(CommandSender sender, String list, int id)
+	void remove(CommandSender sender, String list, int id) throws CommandAnswerException
 	{
-		if(list == null || "".equals(list))
+		final RowList row = getList(list);
+		if(id < 0)
 		{
-		} else {
+			// Remove whole list
+			if(!setupPermission(sender, list))
+				notEnoughPermissions();
+			plugin.connection.removeList(row.name);
 		}
+		// Remove simgle message
+		if(!editPermission(sender, list))
+			notEnoughPermissions();
+		final RowMessage message = getMessage(row, id);
+		plugin.connection.removeMessage(message.id);
+		plugin.fetchAndSchedule();
+		throw new CommandAnswerException("{_LG}Done.");
 	}
 	// rscm set <list> <option> [#] <value>
 	void set(CommandSender sender, String list, int id, String option, String value) throws CommandAnswerException

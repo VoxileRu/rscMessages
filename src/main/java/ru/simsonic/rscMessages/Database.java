@@ -68,7 +68,34 @@ public class Database extends ConnectionMySQL
 	{
 		// This place should include some security filters...
 		setupQueryTemplate("{LIST}", list);
-		executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}lists` (`name`) VALUES ('');");
+		executeUpdate("INSERT IGNORE INTO `{DATABASE}`.`{PREFIX}lists` (`name`) VALUES ('{LIST}');");
+	}
+	public void addMessage(String list, String message)
+	{
+		// This place should include some security filters...
+		setupQueryTemplate("{LIST}", list);
+		setupQueryTemplate("{MESSAGE}", message);
+		executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}messages` (`list`, `text`) VALUES ('{LIST}', '{MESSAGE}');");
+	}
+	public void editMessage(int id, String text)
+	{
+		// This place should include some security filters...
+		setupQueryTemplate("{ID}", Integer.toString(id));
+		setupQueryTemplate("{TEXT}", text);
+		executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}messages` SET `text` = '{TEXT}' WHERE `id` = '{ID}';");
+	}
+	public void removeList(String list)
+	{
+		// This place should include some security filters...
+		setupQueryTemplate("{LIST}", list);
+		executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}messages` WHERE `list` = '{LIST}';");
+		executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}lists` WHERE `name` = '{LIST}';");
+	}
+	public void removeMessage(int id)
+	{
+		// This place should include some security filters...
+		setupQueryTemplate("{ID}", Integer.toString(id));
+		executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}messages` WHERE `id` = '{ID}';");
 	}
 	private void setListOption(String list, String option, String value)
 	{
@@ -92,13 +119,6 @@ public class Database extends ConnectionMySQL
 	public void setListPrefix(String list, String prefix)
 	{
 		setListOption(list, "prefix", (prefix != null) ? "'" + prefix + "'" : "''");
-	}
-	public void addMessage(String list, String message)
-	{
-		// This place should include some security filters...
-		setupQueryTemplate("{LIST}", list);
-		setupQueryTemplate("{MESSAGE}", message);
-		executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}messages` (`list`, `text`) VALUES ('{LIST}', '{MESSAGE}');");
 	}
 	private void setMessageOption(int id, String option, String value)
 	{

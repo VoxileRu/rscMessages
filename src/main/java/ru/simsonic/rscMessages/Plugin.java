@@ -167,8 +167,7 @@ public final class Plugin extends JavaPlugin
 				return;
 			case "a":
 			case "add":
-				String add_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " ");
-				commands.add(sender, args[0], add_text);
+				commands.add(sender, args[0], LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " "));
 				return;
 			case "e":
 			case "edit":
@@ -221,6 +220,43 @@ public final class Plugin extends JavaPlugin
 				// <list> [#]
 				commands.broadcast(sender, args[0], broadcast_id);
 				return;
+			case "h":
+			case "help":
+				// PAGE 3
+				if("3".equals(args[0]) && sender.hasPermission("rscm.admin"))
+				{
+					throw new CommandAnswerException(new String[]
+					{
+						"Empty page. Sorry.",
+					});
+				}
+				// PAGE 2
+				if("2".equals(args[0]))
+				{
+					throw new CommandAnswerException(new String[]
+					{
+						"Available options for lists:",
+						"{YELLOW}enabled {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
+						"{YELLOW}random {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
+						"{YELLOW}delay {MAGENTA}(in seconds)",
+						"{YELLOW}prefix {MAGENTA}(don't enter <text> to clear)",
+						"Available options for messages:",
+						"{YELLOW}enabled {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
+					});
+				}
+				// PAGE 1
+				throw new CommandAnswerException(new String[]
+				{
+					"Usage:",
+					"{YELLOW}/rscm list [list]",
+					"{YELLOW}/rscm broadcast <list> [id]",
+					"{YELLOW}/rscm add <list> [text]",
+					"{YELLOW}/rscm edit <list> <id> <text>",
+					"{YELLOW}/rscm remove <list> [id]",
+					"{YELLOW}/rscm set <list> [id] <option> [value]",
+					"{YELLOW}/rscm help [1|2|3]",
+					"{YELLOW}/rscm reload",
+				});
 			case "reload":
 				if(sender.hasPermission("rscm.admin"))
 				{
