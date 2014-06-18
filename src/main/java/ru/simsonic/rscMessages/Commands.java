@@ -25,16 +25,15 @@ public class Commands
 				if(viewPermission(sender, key))
 				{
 					RowList row = plugin.lists.get(key);
-					answers.add((row.enabled ? "{_LG}" : "{_LR}") + key + " {GRAY}(" + row.messages.size() + ")");
+					answers.add((row.enabled ? "{_LG}" : "{_LR}") + row.name + " {GRAY}(" + row.messages.size() + ")");
 				}
 			throw new CommandAnswerException(answers);
 		}
 		// Enum messages of list
-		list = list.toLowerCase();
 		if(!viewPermission(sender, list))
 			notEnoughPermissions();
+		final RowList row = getList(list);
 		answers.add("List messages are:");
-		final RowList row = plugin.lists.get(list);
 		for(RowMessage message : row.messages)
 			answers.add((message.enabled ? "{_LG}#" : "{_LR}#") + message.id + "{_R}: " + row.prefix + message.text);
 		throw new CommandAnswerException(answers);
@@ -44,7 +43,7 @@ public class Commands
 	{
 		if(list == null)
 			throw new CommandAnswerException("{_LR}List should be specified.");
-		if(text == null)
+		if(text == null || "".equals(text))
 		{
 			// Create new list
 			if(!setupPermission(sender, list))
@@ -67,7 +66,7 @@ public class Commands
 		if(!editPermission(sender, list))
 			notEnoughPermissions();
 		final RowMessage message = getMessage(row, id);
-		if(text == null)
+		if(text == null || "".equals(text))
 			throw new CommandAnswerException("{_LR}Please enter text for the message.");
 		// Update message text
 		plugin.connection.editMessage(message.id, text);
@@ -78,18 +77,19 @@ public class Commands
 	void remove(CommandSender sender, String list, int id) throws CommandAnswerException
 	{
 		final RowList row = getList(list);
-		if(id < 0)
+		if(id <= 0)
 		{
 			// Remove whole list
 			if(!setupPermission(sender, list))
 				notEnoughPermissions();
 			plugin.connection.removeList(row.name);
+		} else {
+			// Remove single message
+			if(!editPermission(sender, list))
+				notEnoughPermissions();
+			final RowMessage message = getMessage(row, id);
+			plugin.connection.removeMessage(message.id);
 		}
-		// Remove simgle message
-		if(!editPermission(sender, list))
-			notEnoughPermissions();
-		final RowMessage message = getMessage(row, id);
-		plugin.connection.removeMessage(message.id);
 		plugin.fetchAndSchedule();
 		throw new CommandAnswerException("{_LG}Done.");
 	}

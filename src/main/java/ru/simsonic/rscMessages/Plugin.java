@@ -17,7 +17,7 @@ import ru.simsonic.utilities.LanguageUtility;
 public final class Plugin extends JavaPlugin
 {
 	private static final Logger consoleLog = Logger.getLogger("Minecraft");
-	private static final String chatPrefix = "{_YL}[rscm] {GOLD}";
+	private static final String chatPrefix = "{GRAY}[rscm] {MAGENTA}";
 	protected final Database connection = new Database(this);
 	protected final Commands commands = new Commands(this);
 	private MetricsLite metrics;
@@ -197,17 +197,17 @@ public final class Plugin extends JavaPlugin
 			case "set":
 				int set_id = -1;
 				String set_option;
-				String set_text;
+				String set_value;
 				try
 				{
 					set_id = Integer.parseInt(args[1]);
 					set_option = args[2];
-					set_text = LanguageUtility.glue(Arrays.copyOfRange(args, 3, args.length), " ");
+					set_value = LanguageUtility.glue(Arrays.copyOfRange(args, 3, args.length), " ");
 				} catch(NumberFormatException ex) {
 					set_option = args[1];
-					set_text = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length), " ");
+					set_value = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				}
-				commands.set(sender, args[0], set_id, set_option, set_text);
+				commands.set(sender, args[0], set_id, set_option, set_value);
 				return;
 			case "b":
 			case "broadcast":
