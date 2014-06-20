@@ -72,7 +72,7 @@ public final class Plugin extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
-		getServer().getScheduler().cancelAllTasks();
+		getServer().getScheduler().cancelTasks(this);
 		for(RowList list : lists.values())
 			list.messages.clear();
 		lists.clear();
@@ -100,7 +100,7 @@ public final class Plugin extends JavaPlugin
 	protected void fetchAndSchedule()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.cancelAllTasks();
+		scheduler.cancelTasks(this);
 		for(RowList list : lists.values())
 			list.messages.clear();
 		lists.clear();
