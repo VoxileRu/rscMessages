@@ -1,10 +1,10 @@
 settings:
+  broadcast-to-console: true
   connection:
     hostname: localhost:3306/minecraft
     username: user
     password: pass
     prefixes: rscm_
-  # Default is 15 min
   fetch-interval-sec: 600
 internal:
   version: 1

@@ -44,6 +44,7 @@ public final class Plugin extends JavaPlugin
 		// Read settings 
 		reloadConfig();
 		autoFetchInterval = 20 * getConfig().getInt("settings.fetch-interval-sec", 600);
+		getConfig().set("settings.broadcast-to-console", getConfig().getBoolean("settings.broadcast-to-console", true));
 		// Setup connection
 		final String hostname = getConfig().getString("settings.connection.hostname", "localhost:3306");
 		final String username = getConfig().getString("settings.connection.username", "user");
@@ -133,7 +134,8 @@ public final class Plugin extends JavaPlugin
 			if(bpa || bpl)
 				player.sendMessage(text);
 		}
-		getServer().getConsoleSender().sendMessage("[rscm] Broadcasting '" + message.rowList.name + "': " + text);
+		if(getConfig().getBoolean("settings.broadcast-to-console", true))
+			getServer().getConsoleSender().sendMessage("[rscm] Broadcasting '" + message.rowList.name + "': " + text);
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
