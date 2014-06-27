@@ -43,8 +43,9 @@ public final class Plugin extends JavaPlugin
 	{
 		// Read settings 
 		reloadConfig();
-		autoFetchInterval = 20 * getConfig().getInt("settings.fetch-interval-sec", 600);
 		getConfig().set("settings.broadcast-to-console", getConfig().getBoolean("settings.broadcast-to-console", true));
+		getConfig().set("settings.use-metrics", getConfig().getBoolean("settings.use-metrics", true));
+		autoFetchInterval = 20 * getConfig().getInt("settings.fetch-interval-sec", 600);
 		// Setup connection
 		final String hostname = getConfig().getString("settings.connection.hostname", "localhost:3306");
 		final String username = getConfig().getString("settings.connection.username", "user");
@@ -56,14 +57,15 @@ public final class Plugin extends JavaPlugin
 		getConfig().set("settings.connection.prefixes", prefixes);
 		connection.Initialize("rscMessages", hostname, username, password, prefixes);
 		// Metrics
-		try
-		{
-			metrics = new MetricsLite(this);
-			metrics.start();
-			consoleLog.info("[rscm] Metrics enabled.");
-		} catch(IOException ex) {
-			consoleLog.log(Level.INFO, "[rscm][Metrics] Exception:\n{0}", ex.getLocalizedMessage());
-		}
+		if(getConfig().getBoolean("settings.use-metrics", true))
+			try
+			{
+				metrics = new MetricsLite(this);
+				metrics.start();
+				consoleLog.info("[rscm] Metrics enabled.");
+			} catch(IOException ex) {
+				consoleLog.log(Level.INFO, "[rscm][Metrics] Exception:\n{0}", ex.getLocalizedMessage());
+			}
 		// Fetch lists and schedule them
 		connection.StartAndDeploy();
 		fetchAndSchedule();

@@ -6,5 +6,6 @@ settings:
     password: pass
     prefixes: rscm_
   fetch-interval-sec: 600
+  use-metrics: true
 internal:
   version: 1
