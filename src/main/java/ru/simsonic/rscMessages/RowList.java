@@ -20,22 +20,29 @@ public class RowList
 			return null;
 		if(random)
 		{
-			final ArrayList<RowMessage> special = new ArrayList<>();
+			final ArrayList<RowMessage> veryOldMessages = new ArrayList<>();
+			final ArrayList<RowMessage> enabledMessages = new ArrayList<>();
 			long veryLongTime = 3 * messages.size() * 20 * delay_sec;
 			for(RowMessage msg : messages)
-				if(msg.lastBroadcast == 0 || (currentTime - msg.lastBroadcast) > veryLongTime)
-					special.add(msg);
-			ArrayList<RowMessage> selectFrom = special.isEmpty() ? messages : special;
+				if(msg.enabled)
+				{
+					if(msg.lastBroadcast == 0 || (currentTime - msg.lastBroadcast) > veryLongTime)
+						veryOldMessages.add(msg);
+					enabledMessages.add(msg);
+				}
+			ArrayList<RowMessage> selectFrom = veryOldMessages.isEmpty() ? enabledMessages : veryOldMessages;
 			return selectFrom.get(rnd.nextInt(selectFrom.size()));
 		}
 		RowMessage largestTime = messages.get(0);
 		for(RowMessage msg : messages)
 		{
+			if(msg.enabled == false)
+				continue;
 			if(msg.lastBroadcast == 0)
 				return msg;
 			if(msg.lastBroadcast < largestTime.lastBroadcast)
 				largestTime = msg;
 		}
-		return largestTime;
+		return largestTime.enabled ? largestTime : null;
 	}
 }
