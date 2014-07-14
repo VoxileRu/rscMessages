@@ -38,6 +38,38 @@ public class Commands
 			answers.add((message.enabled ? "{_LG}#" : "{_LR}#") + message.id + "{_R}: " + row.prefix + message.text);
 		throw new CommandAnswerException(answers);
 	}
+	// rscm info <list> [#]
+	void info(CommandSender sender, String list, int id) throws CommandAnswerException
+	{
+		if(list == null)
+			throw new CommandAnswerException("{_LR}List should be specified.");
+		final RowList row = getList(list);
+		if(!editPermission(sender, list))
+			notEnoughPermissions();
+		final ArrayList<String> answers = new ArrayList<>();
+		if(id <= 0)
+		{
+			// Show list info
+			answers.add("{_LS}Properties of list {_LC}" + row.name + "{_LS}:");
+			answers.add("{_LB}Enabled: " + (row.enabled ? "{_LG}true" : "{_LR}false"));
+			answers.add("{_LB}Random: " + (row.random ? "{_LG}true" : "{_LR}false"));
+			answers.add("{_LB}Delay (sec): {_LG}" + row.delay_sec);
+			answers.add("{_LB}Message prefix: {_R}" + row.prefix);
+			int on = 0, off = 0;
+			for(RowMessage msg : row.messages)
+				if(msg.enabled)
+					on += 1;
+				else
+					off += 1;
+			answers.add("{_LB}Messages count: {_LP}" + row.messages.size() + "{_LB} ({_LG}" + on + "{_LB}/{_LR}" + off + "{_LB}).");
+		} else {
+			// Show message info
+			final RowMessage msg = getMessage(row, id);
+			answers.add("{_LS}Properties of message #{_LC}" + id + "{_LS} of list {_LC}" + row.name + "{_LS}:");
+			answers.add("{_LB}Enabled: " + (msg.enabled ? "{_LG}true" : "{_LR}false"));
+		}
+		throw new CommandAnswerException(answers);
+	}
 	// rscm add <list> <text>
 	void add(CommandSender sender, String list, String text) throws CommandAnswerException
 	{

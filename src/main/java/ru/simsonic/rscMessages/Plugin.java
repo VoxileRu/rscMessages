@@ -169,6 +169,16 @@ public final class Plugin extends JavaPlugin
 			case "list":
 				commands.list(sender, args[0]);
 				return;
+			case "i":
+			case "info":
+				int info_id = -1;
+				try
+				{
+					info_id = Integer.parseInt(args[1]);
+				} catch(NumberFormatException ex) {
+				}
+				commands.info(sender, args[0], info_id);
+				return;
 			case "a":
 			case "add":
 				commands.add(sender, args[0], LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " "));
