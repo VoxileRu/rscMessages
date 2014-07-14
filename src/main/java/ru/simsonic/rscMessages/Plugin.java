@@ -159,7 +159,7 @@ public final class Plugin extends JavaPlugin
 	private void execute(CommandSender sender, String[] args) throws CommandAnswerException
 	{
 		if(args.length == 0)
-			throw new CommandAnswerException("{MAGENTA}rscMessages {GRAY}" + getDescription().getVersion() + "{MAGENTA} by SimSonic.");
+			throw new CommandAnswerException("{_LP}rscMessages {_DP}" + getDescription().getVersion() + "{_LP} by SimSonic.");
 		final ArrayList<String> result = new ArrayList<>();
 		final String command = args[0].toLowerCase();
 		args = Arrays.copyOfRange(args, 1, (args.length >= 5) ? args.length : 5);
@@ -236,14 +236,6 @@ public final class Plugin extends JavaPlugin
 				return;
 			case "h":
 			case "help":
-				// PAGE 3
-				if("3".equals(args[0]) && sender.hasPermission("rscm.admin"))
-				{
-					throw new CommandAnswerException(new String[]
-					{
-						"Empty page. Sorry.",
-					});
-				}
 				// PAGE 2
 				if("2".equals(args[0]))
 				{
@@ -253,7 +245,7 @@ public final class Plugin extends JavaPlugin
 						"{YELLOW}enabled {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
 						"{YELLOW}random {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
 						"{YELLOW}delay {MAGENTA}(in seconds)",
-						"{YELLOW}prefix {MAGENTA}(don't enter <text> to clear)",
+						"{YELLOW}prefix {MAGENTA}(don't enter <text> to clear){_NL}",
 						"Available options for messages:",
 						"{YELLOW}enabled {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
 					});
@@ -263,12 +255,13 @@ public final class Plugin extends JavaPlugin
 				{
 					"Usage:",
 					"{YELLOW}/rscm list [list]",
+					"{YELLOW}/rscm info <list> [id]",
 					"{YELLOW}/rscm broadcast <list> [id]",
 					"{YELLOW}/rscm add <list> [text]",
 					"{YELLOW}/rscm edit <list> <id> <text>",
 					"{YELLOW}/rscm remove <list> [id]",
 					"{YELLOW}/rscm set <list> [id] <option> [value]",
-					"{YELLOW}/rscm help [1|2|3]",
+					"{YELLOW}/rscm help [1|2]",
 					"{YELLOW}/rscm reload",
 				});
 			case "reload":
