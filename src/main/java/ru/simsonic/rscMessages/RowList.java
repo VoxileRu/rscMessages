@@ -31,6 +31,8 @@ public class RowList
 					enabledMessages.add(msg);
 				}
 			ArrayList<RowMessage> selectFrom = veryOldMessages.isEmpty() ? enabledMessages : veryOldMessages;
+			if(selectFrom.isEmpty())
+				return null;
 			return selectFrom.get(rnd.nextInt(selectFrom.size()));
 		}
 		RowMessage largestTime = messages.get(0);
