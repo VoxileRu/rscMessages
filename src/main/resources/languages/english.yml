@@ -1,0 +1,23 @@
+generic:
+  metrics:  "Metrics enabled."
+  enabled:  "rscMessages has been successfully enabled."
+  disabled: "rscMessages has been disabled."
+  reloaded: "rscMessages has been reloaded."
+  fetched:  "Message lists have been fetched from database."
+actions:
+  knownlists:  "Known message lists are:"
+  knownmsgs:   "List messages are:"
+  noperms:     "{_LR}You haven't permissions to do that!"
+  unspeclist:  "{_LR}List should be specified."
+  nosuchlist:  "{_LR}No such list."
+  unspecmsgid: "{_LR}Message id should be specified."
+  nosuchmsgid: "{_LR}No such message id."
+  unspectext:  "{_LR}Please enter text for the message."
+  done:        "{_LG}Done."
+props:
+  listprops: "Properties of list"
+  msgcount:  "Messages count"
+  msgprops:  "Properties of message"
+  listvalid: "Valid options are: {_R}enabled, random, delay, prefix."
+  msgvalid:  "Valid option is: {_R}enabled."
+help:

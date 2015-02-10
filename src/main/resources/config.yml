@@ -7,5 +7,6 @@ settings:
     prefixes: rscm_
   fetch-interval-sec: 600
   use-metrics: true
+  language: english
 internal:
-  version: 1
+  version: 2

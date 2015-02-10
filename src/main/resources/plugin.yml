@@ -1,8 +1,8 @@
-name: ${project.artifactId}
-main: ${project.groupId}.${project.artifactId}.Plugin
+name:    ${project.artifactId}
+main:    ${project.groupId}.${project.artifactId}.BukkitPluginMain
 version: ${project.version}
-author: SimSonic
-website: http://www.voxile.ru
+website: ${project.url}
+author:  SimSonic
 commands:
   rscm:
     description: ${project.artifactId} command hub

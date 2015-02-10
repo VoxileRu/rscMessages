@@ -1,15 +1,17 @@
 package ru.simsonic.rscMessages;
+import ru.simsonic.rscMessages.Data.RowMessage;
+import ru.simsonic.rscMessages.Data.RowList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import ru.simsonic.utilities.ConnectionMySQL;
+import ru.simsonic.rscUtilityLibrary.ConnectionMySQL;
 
 public class Database extends ConnectionMySQL
 {
-	private final Plugin plugin;
-	Database(Plugin plugin)
+	private final BukkitPluginMain plugin;
+	Database(BukkitPluginMain plugin)
 	{
 		this.plugin = plugin;
 	}
@@ -40,7 +42,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsLists.close();
 		} catch(SQLException ex) {
-			consoleLog.log(Level.WARNING, "[rscm] Exception in fetch(1): {0}", ex);
+			consoleLog.log(Level.WARNING, "Exception in fetch(1): {0}", ex);
 		}
 		try(final ResultSet rsMessages = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}messages` ORDER BY `id` ASC;"))
 		{
@@ -60,7 +62,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsMessages.close();
 		} catch(SQLException ex) {
-			consoleLog.log(Level.WARNING, "[rscm] Exception in fetch(2): {0}", ex);
+			consoleLog.log(Level.WARNING, "Exception in fetch(2): {0}", ex);
 		}
 		return result;
 	}

@@ -1,28 +1,32 @@
 package ru.simsonic.rscMessages;
+import ru.simsonic.rscMessages.Data.RowMessage;
+import ru.simsonic.rscMessages.Data.RowList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
-import ru.simsonic.utilities.CommandAnswerException;
-import ru.simsonic.utilities.LanguageUtility;
+import ru.simsonic.rscUtilityLibrary.CommandProcessing.CommandAnswerException;
+import ru.simsonic.rscUtilityLibrary.TextProcessing.GenericChatCodes;
 
-public final class Plugin extends JavaPlugin
+public final class BukkitPluginMain extends JavaPlugin
 {
-	private static final Logger consoleLog = Logger.getLogger("Minecraft");
-	private static final String chatPrefix = "{GRAY}[rscm] {MAGENTA}";
+	private   final static String chatPrefix = "{GRAY}[rscm] {MAGENTA}";
+	public    final static Logger consoleLog = Bukkit.getLogger();
 	protected final Database connection = new Database(this);
 	protected final Commands commands = new Commands(this);
-	private MetricsLite metrics;
-	final HashMap<String, RowList> lists = new HashMap<>();
+	protected final HashMap<String, RowList> lists = new HashMap<>();
 	private int autoFetchInterval = 20 * 600;
+	private MetricsLite metrics;
 	@Override
 	public void onLoad()
 	{
@@ -30,22 +34,33 @@ public final class Plugin extends JavaPlugin
 		switch(getConfig().getInt("internal.version", 1))
 		{
 			case 1:
+				getConfig().set("settings.language", "english");
+				Phrases.extract(this, "english");
+				Phrases.extract(this, "russian");
+				getConfig().set("internal.version", 2);
+				saveConfig();
+			case 2:
 				// NEWEST VERSION
 				break;
 			default:
 				// UNSUPPORTED VERSION?
 				break;
 		}
-		consoleLog.log(Level.INFO, "[rscm] rscMessages has been loaded.");
+		consoleLog.log(Level.INFO, "rscMessages has been loaded.");
 	}
 	@Override
 	public void onEnable()
 	{
 		// Read settings 
 		reloadConfig();
+		final String language = getConfig().getString("settings.language", "english");
+		Phrases.fill(this, language);
 		getConfig().set("settings.broadcast-to-console", getConfig().getBoolean("settings.broadcast-to-console", true));
 		getConfig().set("settings.use-metrics", getConfig().getBoolean("settings.use-metrics", true));
 		autoFetchInterval = 20 * getConfig().getInt("settings.fetch-interval-sec", 600);
+		// Minimum is 1 min
+		if(autoFetchInterval < 1200)
+			autoFetchInterval = 1200;
 		// Setup connection
 		final String hostname = getConfig().getString("settings.connection.hostname", "localhost:3306");
 		final String username = getConfig().getString("settings.connection.username", "user");
@@ -62,15 +77,15 @@ public final class Plugin extends JavaPlugin
 			{
 				metrics = new MetricsLite(this);
 				metrics.start();
-				consoleLog.info("[rscm] Metrics enabled.");
+				consoleLog.info(Phrases.PLUGIN_METRICS.toString());
 			} catch(IOException ex) {
-				consoleLog.log(Level.INFO, "[rscm][Metrics] Exception:\n{0}", ex.getLocalizedMessage());
+				consoleLog.log(Level.INFO, "Exception in Metrics:\n{0}", ex);
 			}
 		// Fetch lists and schedule them
 		connection.StartAndDeploy();
 		fetchAndSchedule();
 		// Done
-		consoleLog.log(Level.INFO, "[rscm] rscMessages has been successfully enabled.");
+		consoleLog.info(Phrases.PLUGIN_ENABLED.toString());
 	}
 	@Override
 	public void onDisable()
@@ -81,7 +96,7 @@ public final class Plugin extends JavaPlugin
 		lists.clear();
 		saveConfig();
 		metrics = null;
-		consoleLog.info("[rscm] rscMessages has been disabled.");
+		consoleLog.info(Phrases.PLUGIN_DISABLED.toString());
 	}
 	private void scheduleBroadcastTasks()
 	{
@@ -108,7 +123,7 @@ public final class Plugin extends JavaPlugin
 			list.messages.clear();
 		lists.clear();
 		lists.putAll(connection.fetch());
-		getServer().getConsoleSender().sendMessage("[rscm] Message lists have been fetched from database.");
+		getServer().getConsoleSender().sendMessage(Phrases.FETCHED.toString());
 		scheduleBroadcastTasks();
 		scheduler.scheduleSyncDelayedTask(this, new Runnable()
 		{
@@ -128,7 +143,7 @@ public final class Plugin extends JavaPlugin
 	protected void broadcastMessage(RowMessage message)
 	{
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
-		final String text = LanguageUtility.processStringStatic(message.rowList.prefix + message.text);
+		final String text = GenericChatCodes.processStringStatic(message.rowList.prefix + message.text);
 		for(Player player : getServer().getOnlinePlayers())
 		{
 			final boolean bpa = player.hasPermission("rscm.receive.*");
@@ -137,7 +152,7 @@ public final class Plugin extends JavaPlugin
 				player.sendMessage(text);
 		}
 		if(getConfig().getBoolean("settings.broadcast-to-console", true))
-			getServer().getConsoleSender().sendMessage("[rscm] Broadcasting '" + message.rowList.name + "': " + text);
+			getServer().getConsoleSender().sendMessage("Broadcasting '" + message.rowList.name + "': " + text);
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -152,14 +167,15 @@ public final class Plugin extends JavaPlugin
 			}
 		} catch(CommandAnswerException ex) {
 			for(String answer : ex.getMessageArray())
-				sender.sendMessage(LanguageUtility.processStringStatic(chatPrefix + answer));
+				sender.sendMessage(GenericChatCodes.processStringStatic(
+					(sender instanceof ConsoleCommandSender ? "" : chatPrefix) + answer));
 		}
 		return true;
 	}
 	private void execute(CommandSender sender, String[] args) throws CommandAnswerException
 	{
 		if(args.length == 0)
-			throw new CommandAnswerException("{_LP}rscMessages {_DP}" + getDescription().getVersion() + "{_LP} by SimSonic.");
+			throw new CommandAnswerException("{_LP}rscMessages {_DP}" + getDescription().getVersion() + "{_LP} © SimSonic.");
 		final ArrayList<String> result = new ArrayList<>();
 		final String command = args[0].toLowerCase();
 		args = Arrays.copyOfRange(args, 1, (args.length >= 5) ? args.length : 5);
@@ -181,7 +197,7 @@ public final class Plugin extends JavaPlugin
 				return;
 			case "a":
 			case "add":
-				commands.add(sender, args[0], LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " "));
+				commands.add(sender, args[0], GenericChatCodes.glue(Arrays.copyOfRange(args, 1, args.length), " "));
 				return;
 			case "e":
 			case "edit":
@@ -190,9 +206,9 @@ public final class Plugin extends JavaPlugin
 				try
 				{
 					edit_id = Integer.parseInt(args[1]);
-					edit_text = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length), " ");
+					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				} catch(NumberFormatException ex) {
-					edit_text = LanguageUtility.glue(Arrays.copyOfRange(args, 1, args.length), " ");
+					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 1, args.length), " ");
 				}
 				commands.edit(sender, args[0], edit_id, edit_text);
 				return;
@@ -216,10 +232,10 @@ public final class Plugin extends JavaPlugin
 				{
 					set_id = Integer.parseInt(args[1]);
 					set_option = args[2];
-					set_value = LanguageUtility.glue(Arrays.copyOfRange(args, 3, args.length), " ");
+					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 3, args.length), " ");
 				} catch(NumberFormatException ex) {
 					set_option = args[1];
-					set_value = LanguageUtility.glue(Arrays.copyOfRange(args, 2, args.length), " ");
+					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				}
 				commands.set(sender, args[0], set_id, set_option, set_value);
 				return;
@@ -270,7 +286,7 @@ public final class Plugin extends JavaPlugin
 					reloadConfig();
 					getPluginLoader().disablePlugin(this);
 					getPluginLoader().enablePlugin(this);
-					getServer().getConsoleSender().sendMessage("[rscm] rscMessages has been reloaded.");
+					getServer().getConsoleSender().sendMessage(Phrases.PLUGIN_RELOADED.toString());
 				}
 				return;
 		}

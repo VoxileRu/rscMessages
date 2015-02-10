@@ -4,11 +4,56 @@
 
 	<groupId>ru.simsonic</groupId>
 	<artifactId>rscMessages</artifactId>
-	<version>0.3.7b</version>
+	<version>0.4.0b</version>
 	<packaging>jar</packaging>
 
 	<name>rscMessages</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/SimSonic/rscMessages</url>
+	
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<repositories>
+		<repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>metrics-repo</id>
+			<url>http://repo.mcstats.org/content/repositories/public/</url>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.8-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>ru.simsonic</groupId>
+			<artifactId>rscUtilityLibrary</artifactId>
+			<version>2.0.0</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics-lite</artifactId>
+			<version>R7</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+	
 	<build>
 		<finalName>${project.artifactId}_v${project.version}</finalName>
 		<plugins>
@@ -37,7 +82,8 @@
 							<minimizeJar>true</minimizeJar>
 							<artifactSet>
 								<includes>
-									<include>ru.simsonic:rscAPI</include>
+									<include>ru.simsonic:rscUtilityLibrary</include>
+									<include>org.mcstats.bukkit:metrics-lite</include>
 								</includes>
 							</artifactSet>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
@@ -66,33 +112,4 @@
 			</resource>
 		</resources>
 	</build>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<repositories>
-		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>methuselah.ru</id>
-			<url>https://nexus.methuselah.ru/content/groups/public/</url>
-		</repository>
-	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.7.9-R0.2</version>
-			<scope>provided</scope>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>ru.simsonic</groupId>
-			<artifactId>rscAPI</artifactId>
-			<version>1.2.3</version>
-			<scope>compile</scope>
-			<type>jar</type>
-		</dependency>
-	</dependencies>
 </project>

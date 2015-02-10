@@ -1,13 +1,15 @@
 package ru.simsonic.rscMessages;
+import ru.simsonic.rscMessages.Data.RowMessage;
+import ru.simsonic.rscMessages.Data.RowList;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.bukkit.command.CommandSender;
-import ru.simsonic.utilities.CommandAnswerException;
+import ru.simsonic.rscUtilityLibrary.CommandProcessing.CommandAnswerException;
 
 public class Commands
 {
-	private final Plugin plugin;
-	Commands(Plugin plugin)
+	private final BukkitPluginMain plugin;
+	Commands(BukkitPluginMain plugin)
 	{
 		this.plugin = plugin;
 	}
@@ -18,7 +20,7 @@ public class Commands
 		if(list == null)
 		{
 			// Enum lists
-			answers.add("Known message lists are:");
+			answers.add(Phrases.ACTION_KNOWNLISTS.toString());
 			final ArrayList<String> keys = new ArrayList<>(plugin.lists.keySet());
 			Collections.sort(keys);
 			for(String key : keys)
@@ -33,7 +35,7 @@ public class Commands
 		if(!viewPermission(sender, list))
 			notEnoughPermissions();
 		final RowList row = getList(list);
-		answers.add("List messages are:");
+		answers.add(Phrases.ACTION_KNOWNMSGS.toString());
 		for(RowMessage message : row.messages)
 			answers.add((message.enabled ? "{_LG}#" : "{_LR}#") + message.id + "{_R}: " + row.prefix + message.text);
 		throw new CommandAnswerException(answers);
@@ -42,7 +44,7 @@ public class Commands
 	void info(CommandSender sender, String list, int id) throws CommandAnswerException
 	{
 		if(list == null)
-			throw new CommandAnswerException("{_LR}List should be specified.");
+			throw new CommandAnswerException(Phrases.ACTION_UNSPECLIST.toString());
 		final RowList row = getList(list);
 		if(!editPermission(sender, list))
 			notEnoughPermissions();
@@ -50,22 +52,23 @@ public class Commands
 		if(id <= 0)
 		{
 			// Show list info
-			answers.add("{_LS}Properties of list {_LC}" + row.name + "{_LS}:");
+			answers.add("{_LS}" + Phrases.PROPS_LISTPROPS.toString() + " {_LC}" + row.name + "{_LS}:");
 			answers.add("{_LB}Enabled: " + (row.enabled ? "{_LG}true" : "{_LR}false"));
 			answers.add("{_LB}Random: " + (row.random ? "{_LG}true" : "{_LR}false"));
-			answers.add("{_LB}Delay (sec): {_LG}" + row.delay_sec);
-			answers.add("{_LB}Message prefix: {_R}" + row.prefix);
+			answers.add("{_LB}Delay: {_LG}" + row.delay_sec + " sec");
+			answers.add("{_LB}Prefix: {_R}" + row.prefix);
 			int on = 0, off = 0;
 			for(RowMessage msg : row.messages)
 				if(msg.enabled)
 					on += 1;
 				else
 					off += 1;
-			answers.add("{_LB}Messages count: {_LP}" + row.messages.size() + "{_LB} ({_LG}" + on + "{_LB}/{_LR}" + off + "{_LB}).");
+			answers.add("{_LB}" + Phrases.PROPS_MSGCOUNT.toString() + ": {_LP}" + row.messages.size() + "{_LB}"
+				+ " ({_LG}" + on + "{_LB}/{_LR}" + off + "{_LB}).");
 		} else {
 			// Show message info
 			final RowMessage msg = getMessage(row, id);
-			answers.add("{_LS}Properties of message #{_LC}" + id + "{_LS} of list {_LC}" + row.name + "{_LS}:");
+			answers.add("{_LS}" + Phrases.PROPS_MSGPROPS.toString() + " #{_LC}" + id + "{_LS} of list {_LC}" + row.name + "{_LS}:");
 			answers.add("{_LB}Enabled: " + (msg.enabled ? "{_LG}true" : "{_LR}false"));
 		}
 		throw new CommandAnswerException(answers);
@@ -74,7 +77,7 @@ public class Commands
 	void add(CommandSender sender, String list, String text) throws CommandAnswerException
 	{
 		if(list == null)
-			throw new CommandAnswerException("{_LR}List should be specified.");
+			throw new CommandAnswerException(Phrases.ACTION_UNSPECLIST.toString());
 		if(text == null || "".equals(text))
 		{
 			// Create new list
@@ -89,7 +92,7 @@ public class Commands
 			plugin.connection.addMessage(row.name, text);
 		}
 		plugin.fetchAndSchedule();
-		throw new CommandAnswerException("{_LG}Done.");
+		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm edit <list> <#> <new text>
 	void edit(CommandSender sender, String list, int id, String text) throws CommandAnswerException
@@ -99,11 +102,11 @@ public class Commands
 			notEnoughPermissions();
 		final RowMessage message = getMessage(row, id);
 		if(text == null || "".equals(text))
-			throw new CommandAnswerException("{_LR}Please enter text for the message.");
+			throw new CommandAnswerException(Phrases.ACTION_UNSPECTEXT.toString());
 		// Update message text
 		plugin.connection.editMessage(message.id, text);
 		plugin.fetchAndSchedule();
-		throw new CommandAnswerException("{_LG}Done.");
+		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm remove <list> [#]
 	void remove(CommandSender sender, String list, int id) throws CommandAnswerException
@@ -123,7 +126,7 @@ public class Commands
 			plugin.connection.removeMessage(message.id);
 		}
 		plugin.fetchAndSchedule();
-		throw new CommandAnswerException("{_LG}Done.");
+		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm set <list> <option> [#] <value>
 	void set(CommandSender sender, String list, int id, String option, String value) throws CommandAnswerException
@@ -142,7 +145,7 @@ public class Commands
 					plugin.connection.setMessageEnabled(message.id, Boolean.parseBoolean(value));
 					break;
 				default:
-					throw new CommandAnswerException("Valid option is: {_R}enabled.");
+					throw new CommandAnswerException(Phrases.PROPS_MSGVALID.toString());
 			}
 		} else {
 			if(!setupPermission(sender, list))
@@ -162,34 +165,35 @@ public class Commands
 					plugin.connection.setListPrefix(list, value);
 					break;
 				default:
-					throw new CommandAnswerException("Valid options are: {_R}enabled, random, delay, prefix.");
+					throw new CommandAnswerException(Phrases.PROPS_LISTVALID.toString());
 			}
 		}
 		plugin.fetchAndSchedule();
-		throw new CommandAnswerException("{_LG}Done.");
+		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm broadcast <list> [#]
 	void broadcast(CommandSender sender, String list, int id) throws CommandAnswerException
 	{
 		if(list == null)
-			throw new CommandAnswerException("{_LR}List should be specified.");
+			throw new CommandAnswerException(Phrases.ACTION_UNSPECLIST.toString());
 		list = list.toLowerCase();
 		if(!setupPermission(sender, list))
 			notEnoughPermissions();
 		final RowList row = plugin.lists.get(list);
 		if(row == null)
-			throw new CommandAnswerException("{_LR}No such list.");
+			throw new CommandAnswerException(Phrases.ACTION_NOSUCHLIST.toString());
 		if(id >= 0)
 		{
 			for(RowMessage message : row.messages)
 				if(message.id == id)
 				{
 					plugin.broadcastMessage(message);
-					return;
+					throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 				}
-			throw new CommandAnswerException("{_LR}No such message id.");
-		} else
-			plugin.broadcastList(row);
+			throw new CommandAnswerException(Phrases.ACTION_NOSUCHMSGID.toString());
+		}
+		plugin.broadcastList(row);
+		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	private boolean viewPermission(CommandSender sender, String list)
 	{
@@ -220,24 +224,24 @@ public class Commands
 	}
 	private void notEnoughPermissions() throws CommandAnswerException
 	{
-		throw new CommandAnswerException("You have not permission to do that!");
+		throw new CommandAnswerException(Phrases.ACTION_NOPERMS.toString());
 	}
 	private RowList getList(String list) throws CommandAnswerException
 	{
 		if(list == null || "".equals(list))
-			throw new CommandAnswerException("{_LR}List should be specified.");
+			throw new CommandAnswerException(Phrases.ACTION_UNSPECLIST.toString());
 		final RowList result = plugin.lists.get(list.toLowerCase());
 		if(result == null)
-			throw new CommandAnswerException("{_LR}No such list.");
+			throw new CommandAnswerException(Phrases.ACTION_NOSUCHLIST.toString());
 		return result;
 	}
 	private RowMessage getMessage(RowList list, int id) throws CommandAnswerException
 	{
 		if(id <= 0)
-			throw new CommandAnswerException("{_LR}Message id should be specified.");
+			throw new CommandAnswerException(Phrases.ACTION_UNSPECMSGID.toString());
 		for(RowMessage message : list.messages)
 			if(message.id == id)
 				return message;
-		throw new CommandAnswerException("{_LR}No such message id.");
+		throw new CommandAnswerException(Phrases.ACTION_NOSUCHMSGID.toString());
 	}
 }

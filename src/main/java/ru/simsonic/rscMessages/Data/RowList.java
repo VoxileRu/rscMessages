@@ -1,18 +1,18 @@
-package ru.simsonic.rscMessages;
+package ru.simsonic.rscMessages.Data;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class RowList
 {
 	// Database
-	int     id;
-	String  name;
-	boolean enabled;
-	boolean random;
-	int     delay_sec;
-	String  prefix;
+	public int     id;
+	public String  name;
+	public boolean enabled;
+	public boolean random;
+	public int     delay_sec;
+	public String  prefix;
 	// Internal
-	ArrayList<RowMessage> messages = new ArrayList<>();
+	public ArrayList<RowMessage> messages = new ArrayList<>();
 	private static final Random rnd = new Random();
 	public RowMessage getNextMessage(long currentTime)
 	{
