@@ -70,7 +70,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		getConfig().set("settings.connection.username", username);
 		getConfig().set("settings.connection.password", password);
 		getConfig().set("settings.connection.prefixes", prefixes);
-		connection.Initialize("rscMessages", hostname, username, password, prefixes);
+		connection.initialize("rscMessages", hostname, username, password, prefixes);
 		// Metrics
 		if(getConfig().getBoolean("settings.use-metrics", true))
 			try

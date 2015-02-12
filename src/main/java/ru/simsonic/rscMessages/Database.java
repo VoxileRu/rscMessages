@@ -13,6 +13,7 @@ public class Database extends ConnectionMySQL
 	private final BukkitPluginMain plugin;
 	Database(BukkitPluginMain plugin)
 	{
+		super(BukkitPluginMain.consoleLog);
 		this.plugin = plugin;
 	}
 	public void StartAndDeploy()
@@ -42,7 +43,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsLists.close();
 		} catch(SQLException ex) {
-			consoleLog.log(Level.WARNING, "Exception in fetch(1): {0}", ex);
+			logger.log(Level.WARNING, "Exception in fetch(1): {0}", ex);
 		}
 		try(final ResultSet rsMessages = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}messages` ORDER BY `id` ASC;"))
 		{
@@ -62,7 +63,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsMessages.close();
 		} catch(SQLException ex) {
-			consoleLog.log(Level.WARNING, "Exception in fetch(2): {0}", ex);
+			logger.log(Level.WARNING, "Exception in fetch(2): {0}", ex);
 		}
 		return result;
 	}
