@@ -10,16 +10,14 @@ import ru.simsonic.rscUtilityLibrary.ConnectionMySQL;
 
 public class Database extends ConnectionMySQL
 {
-	private final BukkitPluginMain plugin;
-	Database(BukkitPluginMain plugin)
+	Database()
 	{
 		super(BukkitPluginMain.consoleLog);
-		this.plugin = plugin;
 	}
-	public void StartAndDeploy()
+	public void deploy()
 	{
 		if(isConnected())
-			executeUpdate(loadResourceSQLT("Deploy"));
+			executeUpdateT("Deploy");
 	}
 	public Map<String, RowList> fetch()
 	{
@@ -31,12 +29,12 @@ public class Database extends ConnectionMySQL
 			while(rsLists.next())
 			{
 				final RowList list = new RowList();
-				list.id = rsLists.getInt("id");
-				list.name = rsLists.getString("name");
-				list.enabled = rsLists.getBoolean("enabled");
-				list.random = rsLists.getBoolean("random");
+				list.id        = rsLists.getInt("id");
+				list.name      = rsLists.getString("name");
+				list.enabled   = rsLists.getBoolean("enabled");
+				list.random    = rsLists.getBoolean("random");
 				list.delay_sec = rsLists.getInt("delay_sec");
-				list.prefix = rsLists.getString("prefix");
+				list.prefix    = rsLists.getString("prefix");
 				if(list.prefix == null)
 					list.prefix = "";
 				result.put(list.name.toLowerCase(), list);

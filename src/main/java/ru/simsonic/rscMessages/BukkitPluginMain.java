@@ -2,7 +2,6 @@ package ru.simsonic.rscMessages;
 import ru.simsonic.rscMessages.Data.RowMessage;
 import ru.simsonic.rscMessages.Data.RowList;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -22,7 +21,7 @@ public final class BukkitPluginMain extends JavaPlugin
 {
 	private   final static String chatPrefix = "{GRAY}[rscm] {MAGENTA}";
 	public    final static Logger consoleLog = Bukkit.getLogger();
-	protected final Database connection = new Database(this);
+	protected final Database connection = new Database();
 	protected final Commands commands = new Commands(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
 	private int autoFetchInterval = 20 * 600;
@@ -31,12 +30,17 @@ public final class BukkitPluginMain extends JavaPlugin
 	public void onLoad()
 	{
 		saveDefaultConfig();
+		consoleLog.log(Level.INFO, "[rscm] rscMessages has been loaded.");
+	}
+	@Override
+	public void onEnable()
+	{
+		// Update config
+		reloadConfig();
 		switch(getConfig().getInt("internal.version", 1))
 		{
 			case 1:
 				getConfig().set("settings.language", "english");
-				Phrases.extract(this, "english");
-				Phrases.extract(this, "russian");
 				getConfig().set("internal.version", 2);
 				saveConfig();
 			case 2:
@@ -46,13 +50,9 @@ public final class BukkitPluginMain extends JavaPlugin
 				// UNSUPPORTED VERSION?
 				break;
 		}
-		consoleLog.log(Level.INFO, "rscMessages has been loaded.");
-	}
-	@Override
-	public void onEnable()
-	{
-		// Read settings 
-		reloadConfig();
+		Phrases.extract(this, "english");
+		Phrases.extract(this, "russian");
+		// Read settings
 		final String language = getConfig().getString("settings.language", "english");
 		Phrases.fill(this, language);
 		getConfig().set("settings.broadcast-to-console", getConfig().getBoolean("settings.broadcast-to-console", true));
@@ -77,15 +77,15 @@ public final class BukkitPluginMain extends JavaPlugin
 			{
 				metrics = new MetricsLite(this);
 				metrics.start();
-				consoleLog.info(Phrases.PLUGIN_METRICS.toString());
+				consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_METRICS.toString());
 			} catch(IOException ex) {
-				consoleLog.log(Level.INFO, "Exception in Metrics:\n{0}", ex);
+				consoleLog.log(Level.INFO, "[rscm] Exception in Metrics:\n{0}", ex);
 			}
 		// Fetch lists and schedule them
-		connection.StartAndDeploy();
+		connection.deploy();
 		fetchAndSchedule();
 		// Done
-		consoleLog.info(Phrases.PLUGIN_ENABLED.toString());
+		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_ENABLED.toString());
 	}
 	@Override
 	public void onDisable()
@@ -93,10 +93,11 @@ public final class BukkitPluginMain extends JavaPlugin
 		getServer().getScheduler().cancelTasks(this);
 		for(RowList list : lists.values())
 			list.messages.clear();
+		connection.disconnect();
 		lists.clear();
 		saveConfig();
 		metrics = null;
-		consoleLog.info(Phrases.PLUGIN_DISABLED.toString());
+		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_DISABLED.toString());
 	}
 	private void scheduleBroadcastTasks()
 	{
@@ -123,7 +124,7 @@ public final class BukkitPluginMain extends JavaPlugin
 			list.messages.clear();
 		lists.clear();
 		lists.putAll(connection.fetch());
-		getServer().getConsoleSender().sendMessage(Phrases.FETCHED.toString());
+		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.DATA_FETCHED.toString());
 		scheduleBroadcastTasks();
 		scheduler.scheduleSyncDelayedTask(this, new Runnable()
 		{
@@ -152,7 +153,12 @@ public final class BukkitPluginMain extends JavaPlugin
 				player.sendMessage(text);
 		}
 		if(getConfig().getBoolean("settings.broadcast-to-console", true))
-			getServer().getConsoleSender().sendMessage("Broadcasting '" + message.rowList.name + "': " + text);
+			consoleLog.log(Level.INFO, "[rscm] {0} ''{1}'':\n{2}", new Object[]
+			{
+				Phrases.ACTION_BROADCAST.toString(),
+				message.rowList.name,
+				text
+			});
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -176,7 +182,6 @@ public final class BukkitPluginMain extends JavaPlugin
 	{
 		if(args.length == 0)
 			throw new CommandAnswerException("{_LP}rscMessages {_DP}" + getDescription().getVersion() + "{_LP} © SimSonic.");
-		final ArrayList<String> result = new ArrayList<>();
 		final String command = args[0].toLowerCase();
 		args = Arrays.copyOfRange(args, 1, (args.length >= 5) ? args.length : 5);
 		switch(command)
@@ -257,19 +262,19 @@ public final class BukkitPluginMain extends JavaPlugin
 				{
 					throw new CommandAnswerException(new String[]
 					{
-						"Available options for lists:",
-						"{YELLOW}enabled {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
-						"{YELLOW}random {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
-						"{YELLOW}delay {MAGENTA}(in seconds)",
-						"{YELLOW}prefix {MAGENTA}(don't enter <text> to clear){_NL}",
-						"Available options for messages:",
-						"{YELLOW}enabled {MAGENTA}(only {GOLD}true{MAGENTA} means true, otherwise false)",
+						Phrases.HELP_OPTIONS_LIST.toString(),
+						Phrases.HELP_LIST_ENABLED.toString(),
+						Phrases.HELP_LIST_RANDOM.toString(),
+						Phrases.HELP_LIST_DELAY.toString(),
+						Phrases.HELP_LIST_PREFIX.toString(),
+						Phrases.HELP_OPTIONS_MSG.toString(),
+						Phrases.HELP_MSG_ENABLED.toString(),
 					});
 				}
 				// PAGE 1
 				throw new CommandAnswerException(new String[]
 				{
-					"Usage:",
+					Phrases.HELP_USAGE.toString(),
 					"{YELLOW}/rscm list [list]",
 					"{YELLOW}/rscm info <list> [id]",
 					"{YELLOW}/rscm broadcast <list> [id]",
@@ -286,10 +291,10 @@ public final class BukkitPluginMain extends JavaPlugin
 					reloadConfig();
 					getPluginLoader().disablePlugin(this);
 					getPluginLoader().enablePlugin(this);
-					getServer().getConsoleSender().sendMessage(Phrases.PLUGIN_RELOADED.toString());
+					consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_RELOADED.toString());
 				}
 				return;
 		}
-		throw new CommandAnswerException(result);
+		throw new CommandAnswerException(Phrases.ACTION_WRONGCMD.toString());
 	}
 }

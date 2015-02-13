@@ -1,8 +1,10 @@
 package ru.simsonic.rscMessages;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -12,12 +14,13 @@ public enum Phrases
 	PLUGIN_DISABLED   ("generic.disabled"),
 	PLUGIN_METRICS    ("generic.metrics"),
 	PLUGIN_RELOADED   ("generic.reloaded"),
-	FETCHED           ("generic.fetched"),
+	DATA_FETCHED      ("generic.fetched"),
 	PROPS_LISTPROPS   ("props.listprops"),
 	PROPS_MSGCOUNT    ("props.msgcount"),
 	PROPS_MSGPROPS    ("props.msgprops"),
 	PROPS_LISTVALID   ("props.listvalid"),
 	PROPS_MSGVALID    ("props.msgvalid"),
+	ACTION_BROADCAST  ("actions.broadcasting"),
 	ACTION_KNOWNLISTS ("actions.knownlists"),
 	ACTION_KNOWNMSGS  ("actions.knownmsgs"),
 	ACTION_DONE       ("actions.done"),
@@ -26,7 +29,17 @@ public enum Phrases
 	ACTION_NOSUCHLIST ("actions.nosuchlist"),
 	ACTION_UNSPECMSGID("actions.unspecmsgid"),
 	ACTION_NOSUCHMSGID("actions.nosuchmsgid"),
-	ACTION_UNSPECTEXT ("actions.unspectext");
+	ACTION_UNSPECTEXT ("actions.unspectext"),
+	ACTION_WRONGCMD   ("actions.wrongcmd"),
+	HELP_USAGE        ("help.usage"),
+	HELP_OPTIONS_LIST ("help.options-list"),
+	HELP_OPTIONS_MSG  ("help.options-msg"),
+	HELP_LIST_ENABLED ("help.list-enabled"),
+	HELP_LIST_RANDOM  ("help.list-random"),
+	HELP_LIST_DELAY   ("help.list-delay"),
+	HELP_LIST_PREFIX  ("help.list-prefix"),
+	HELP_MSG_ENABLED  ("help.msg-enabled"),
+	;
 	private final String node;
 	private String phrase;
 	private Phrases(String node)
@@ -52,14 +65,12 @@ public enum Phrases
 			final File langFile = new File(plugin.getDataFolder(), langName + ".yml");
 			if(!langFile.isFile())
 			{
-				final YamlConfiguration langConfig = YamlConfiguration.loadConfiguration(langFile);
+				final FileChannel fileChannel = new FileOutputStream(langFile).getChannel();
 				final InputStream langStream = BukkitPluginMain.class.getResourceAsStream("/languages/" + langName + ".yml");
-				YamlConfiguration langSource = YamlConfiguration.loadConfiguration(new InputStreamReader(langStream));
-				langConfig.setDefaults(langSource);
-				langConfig.save(langFile);
+				fileChannel.transferFrom(Channels.newChannel(langStream), 0, Long.MAX_VALUE);
 			}
 		} catch(IOException ex) {
-			BukkitPluginMain.consoleLog.log(Level.WARNING, "Cannot extract language: {0}", langName);
+			BukkitPluginMain.consoleLog.log(Level.WARNING, "[rscm] §4Cannot extract language: §a{0}", langName);
 		}
 	}
 }

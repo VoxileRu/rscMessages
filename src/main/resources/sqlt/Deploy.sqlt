@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `{DATABASE}`.`{PREFIX}lists` (
 	`enabled`   BIT(1)       NOT NULL DEFAULT b'1',
 	`random`    BIT(1)       NOT NULL DEFAULT b'0',
 	`delay_sec` INT UNSIGNED NOT NULL DEFAULT '60',
-	`prefix`    VARCHAR(255) DEFAULT NULL,
+	`prefix`    VARCHAR(255)          DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `id_UNIQUE` (`id`),
 	UNIQUE KEY `name_UNIQUE` (`name`)
