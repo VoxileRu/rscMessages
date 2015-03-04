@@ -14,6 +14,7 @@ actions:
   unspecmsgid:  "{_LR}Message id should be specified."
   nosuchmsgid:  "{_LR}No such message id."
   unspectext:   "{_LR}Please enter text for the message."
+  incorrect:    "{_LR}Invalid value has been entered."
   done:         "{_LG}Done."
   wrongcmd:     "{_LR}Unknown command.{_YL} Type {GOLD}/rscm help{_YL} for help."
 props:

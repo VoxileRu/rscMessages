@@ -1,10 +1,10 @@
 package ru.simsonic.rscMessages;
-import ru.simsonic.rscMessages.Data.RowMessage;
-import ru.simsonic.rscMessages.Data.RowList;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.bukkit.command.CommandSender;
-import ru.simsonic.rscUtilityLibrary.CommandProcessing.CommandAnswerException;
+import ru.simsonic.rscMessages.Data.RowList;
+import ru.simsonic.rscMessages.Data.RowMessage;
+import ru.simsonic.rscUtilityLibrary.Bukkit.Commands.CommandAnswerException;
 
 public class Commands
 {
@@ -142,7 +142,7 @@ public class Commands
 			switch(option.toLowerCase())
 			{
 				case "enabled":
-					plugin.connection.setMessageEnabled(message.id, Boolean.parseBoolean(value));
+					plugin.connection.setMessageEnabled(message.id, parseBoolean(value));
 					break;
 				default:
 					throw new CommandAnswerException(Phrases.PROPS_MSGVALID.toString());
@@ -153,13 +153,13 @@ public class Commands
 			switch(option.toLowerCase())
 			{
 				case "enabled":
-					plugin.connection.setListEnabled(list, Boolean.parseBoolean(value));
+					plugin.connection.setListEnabled(list, parseBoolean(value));
 					break;
 				case "random":
-					plugin.connection.setListRandom(list, Boolean.parseBoolean(value));
+					plugin.connection.setListRandom(list, parseBoolean(value));
 					break;
 				case "delay":
-					plugin.connection.setListDelay(list, Integer.parseInt(value));
+					plugin.connection.setListDelay(list, parseInteger(value));
 					break;
 				case "prefix":
 					plugin.connection.setListPrefix(list, value);
@@ -170,6 +170,32 @@ public class Commands
 		}
 		plugin.fetchAndSchedule();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
+	}
+	private boolean parseBoolean(String value) throws CommandAnswerException
+	{
+		switch(value.toLowerCase())
+		{
+			case "true":
+			case "yes":
+			case "on":
+				return true;
+			case "false":
+			case "no":
+			case "off":
+				return false;
+			case "":
+			default:
+				throw new CommandAnswerException(Phrases.ACTION_INCORRECT_V.toString());
+		}
+	}
+	private int parseInteger(String value) throws CommandAnswerException
+	{
+		try
+		{
+			return Integer.parseInt(value);
+		} catch(IllegalArgumentException ex) {
+		}
+		throw new CommandAnswerException(Phrases.ACTION_INCORRECT_V.toString());
 	}
 	// rscm broadcast <list> [#]
 	void broadcast(CommandSender sender, String list, int id) throws CommandAnswerException

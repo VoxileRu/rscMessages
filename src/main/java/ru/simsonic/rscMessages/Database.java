@@ -1,11 +1,11 @@
 package ru.simsonic.rscMessages;
-import ru.simsonic.rscMessages.Data.RowMessage;
-import ru.simsonic.rscMessages.Data.RowList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import ru.simsonic.rscMessages.Data.RowList;
+import ru.simsonic.rscMessages.Data.RowMessage;
 import ru.simsonic.rscUtilityLibrary.ConnectionMySQL;
 
 public class Database extends ConnectionMySQL

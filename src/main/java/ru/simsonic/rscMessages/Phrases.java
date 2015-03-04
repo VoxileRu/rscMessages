@@ -23,6 +23,7 @@ public enum Phrases
 	ACTION_BROADCAST  ("actions.broadcasting"),
 	ACTION_KNOWNLISTS ("actions.knownlists"),
 	ACTION_KNOWNMSGS  ("actions.knownmsgs"),
+	ACTION_INCORRECT_V("actions.incorrect"),
 	ACTION_DONE       ("actions.done"),
 	ACTION_NOPERMS    ("actions.noperms"),
 	ACTION_UNSPECLIST ("actions.unspeclist"),
