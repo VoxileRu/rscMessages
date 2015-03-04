@@ -37,6 +37,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	{
 		// Update config
 		reloadConfig();
+		Phrases.extractTranslations(this.getDataFolder());
 		switch(getConfig().getInt("internal.version", 1))
 		{
 			case 1:
@@ -50,8 +51,6 @@ public final class BukkitPluginMain extends JavaPlugin
 				// UNSUPPORTED VERSION?
 				break;
 		}
-		Phrases.extract(this, "english");
-		Phrases.extract(this, "russian");
 		// Read settings
 		final String language = getConfig().getString("settings.language", "english");
 		Phrases.fill(this, language);

@@ -59,19 +59,23 @@ public enum Phrases
 		for(Phrases value : Phrases.values())
 			value.phrase = langConfig.getString(value.node, value.node);
 	}
-	public static void extract(BukkitPluginMain plugin, String langName)
+	public static void extractTranslations(File workingDir)
+	{
+		extractTranslation(workingDir, "english");
+		extractTranslation(workingDir, "russian");
+	}
+	private static void extractTranslation(File workingDir, String langName)
 	{
 		try
 		{
-			final File langFile = new File(plugin.getDataFolder(), langName + ".yml");
-			if(!langFile.isFile())
-			{
-				final FileChannel fileChannel = new FileOutputStream(langFile).getChannel();
-				final InputStream langStream = BukkitPluginMain.class.getResourceAsStream("/languages/" + langName + ".yml");
-				fileChannel.transferFrom(Channels.newChannel(langStream), 0, Long.MAX_VALUE);
-			}
+			final File langFile = new File(workingDir, langName + ".yml");
+			if(langFile.isFile())
+				langFile.delete();
+			final FileChannel fileChannel = new FileOutputStream(langFile).getChannel();
+			fileChannel.force(true);
+			final InputStream langStream = BukkitPluginMain.class.getResourceAsStream("/languages/" + langName + ".yml");
+			fileChannel.transferFrom(Channels.newChannel(langStream), 0, Long.MAX_VALUE);
 		} catch(IOException ex) {
-			BukkitPluginMain.consoleLog.log(Level.WARNING, "[rscm] §4Cannot extract language: §a{0}", langName);
 		}
 	}
 }
