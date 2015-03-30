@@ -24,8 +24,9 @@ public final class BukkitPluginMain extends JavaPlugin
 	public    final static Logger consoleLog = Bukkit.getLogger();
 	protected final Database connection = new Database();
 	protected final Commands commands = new Commands(this);
+	protected final Fetcher fetcher = new Fetcher(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
-	private int autoFetchInterval = 20 * 600;
+	protected int autoFetchInterval = 20 * 600;
 	private MetricsLite metrics;
 	@Override
 	public void onLoad()
@@ -83,7 +84,7 @@ public final class BukkitPluginMain extends JavaPlugin
 			}
 		// Fetch lists and schedule them
 		connection.deploy();
-		fetchAndSchedule();
+		fetcher.startDeamon();
 		// Done
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_ENABLED.toString());
 	}
@@ -99,7 +100,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		metrics = null;
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_DISABLED.toString());
 	}
-	private void scheduleBroadcastTasks()
+	protected void scheduleBroadcastTasks()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
 		for(final RowList list : lists.values())
@@ -115,25 +116,6 @@ public final class BukkitPluginMain extends JavaPlugin
 				}
 			}, delay_ticks, delay_ticks);
 		}
-	}
-	protected void fetchAndSchedule()
-	{
-		final BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.cancelTasks(this);
-		for(RowList list : lists.values())
-			list.messages.clear();
-		lists.clear();
-		lists.putAll(connection.fetch());
-		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.DATA_FETCHED.toString());
-		scheduleBroadcastTasks();
-		scheduler.scheduleSyncDelayedTask(this, new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				fetchAndSchedule();
-			}
-		}, autoFetchInterval);
 	}
 	protected void broadcastList(RowList list)
 	{

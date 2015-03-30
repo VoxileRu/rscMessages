@@ -53,8 +53,8 @@ public class Commands
 		{
 			// Show list info
 			answers.add("{_LS}" + Phrases.PROPS_LISTPROPS.toString() + " {_LC}" + row.name + "{_LS}:");
-			answers.add("{_LB}Enabled: " + (row.enabled ? "{_LG}true" : "{_LR}false"));
-			answers.add("{_LB}Random: " + (row.random ? "{_LG}true" : "{_LR}false"));
+			answers.add("{_LB}Enabled: "    + (row.enabled ? "{_LG}true" : "{_LR}false"));
+			answers.add("{_LB}Random: "     + (row.random  ? "{_LG}true" : "{_LR}false"));
 			answers.add("{_LB}Delay: {_LG}" + row.delay_sec + " sec");
 			answers.add("{_LB}Prefix: {_R}" + row.prefix);
 			int on = 0, off = 0;
@@ -91,7 +91,7 @@ public class Commands
 				notEnoughPermissions();
 			plugin.connection.addMessage(row.name, text);
 		}
-		plugin.fetchAndSchedule();
+		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm edit <list> <#> <new text>
@@ -105,7 +105,7 @@ public class Commands
 			throw new CommandAnswerException(Phrases.ACTION_UNSPECTEXT.toString());
 		// Update message text
 		plugin.connection.editMessage(message.id, text);
-		plugin.fetchAndSchedule();
+		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm remove <list> [#]
@@ -125,7 +125,7 @@ public class Commands
 			final RowMessage message = getMessage(row, id);
 			plugin.connection.removeMessage(message.id);
 		}
-		plugin.fetchAndSchedule();
+		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	// rscm set <list> <option> [#] <value>
@@ -168,17 +168,19 @@ public class Commands
 					throw new CommandAnswerException(Phrases.PROPS_LISTVALID.toString());
 			}
 		}
-		plugin.fetchAndSchedule();
+		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
 	private boolean parseBoolean(String value) throws CommandAnswerException
 	{
 		switch(value.toLowerCase())
 		{
+			case "enable":
 			case "true":
 			case "yes":
 			case "on":
 				return true;
+			case "disable":
 			case "false":
 			case "no":
 			case "off":
