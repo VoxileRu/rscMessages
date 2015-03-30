@@ -23,6 +23,7 @@ props:
   msgprops:  "Properties of message"
   listvalid: "Valid options are: {_R}enabled, random, delay, prefix."
   msgvalid:  "Valid option is: {_R}enabled."
+  msgtext:   "Message text (including list prefix):"
 help:
   usage:        "Usage:"
   options-list: "Available options for lists:"

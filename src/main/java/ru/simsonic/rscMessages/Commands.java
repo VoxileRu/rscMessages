@@ -70,6 +70,7 @@ public class Commands
 			final RowMessage msg = getMessage(row, id);
 			answers.add("{_LS}" + Phrases.PROPS_MSGPROPS.toString() + " #{_LC}" + id + "{_LS} of list {_LC}" + row.name + "{_LS}:");
 			answers.add("{_LB}Enabled: " + (msg.enabled ? "{_LG}true" : "{_LR}false"));
+			answers.add("{_LB}" + Phrases.PROPS_MSGTEXT.toString() + "{_NL}{_R}" + row.prefix + msg.text);
 		}
 		throw new CommandAnswerException(answers);
 	}

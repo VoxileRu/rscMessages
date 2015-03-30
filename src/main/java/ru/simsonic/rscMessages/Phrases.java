@@ -20,6 +20,7 @@ public enum Phrases
 	PROPS_MSGPROPS    ("props.msgprops"),
 	PROPS_LISTVALID   ("props.listvalid"),
 	PROPS_MSGVALID    ("props.msgvalid"),
+	PROPS_MSGTEXT     ("props.msgtext"),
 	ACTION_BROADCAST  ("actions.broadcasting"),
 	ACTION_KNOWNLISTS ("actions.knownlists"),
 	ACTION_KNOWNMSGS  ("actions.knownmsgs"),
