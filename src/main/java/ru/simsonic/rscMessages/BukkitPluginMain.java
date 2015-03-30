@@ -127,18 +127,23 @@ public final class BukkitPluginMain extends JavaPlugin
 	{
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 		final String text = GenericChatCodes.processStringStatic(message.rowList.prefix + message.text);
+		int counter = 0;
 		for(Player player : Tools.getOnlinePlayers())
 		{
 			final boolean bpa = player.hasPermission("rscm.receive.*");
 			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
 			if(bpa || bpl)
+			{
 				player.sendMessage(text);
+				counter += 1;
+			}
 		}
 		if(getConfig().getBoolean("settings.broadcast-to-console", true))
-			consoleLog.log(Level.INFO, "[rscm] {0} ''{1}'':\n{2}", new Object[]
+			consoleLog.log(Level.INFO, "[rscm] {0} ''{1}'' ({2}):\n{3}", new Object[]
 			{
 				Phrases.ACTION_BROADCAST.toString(),
 				message.rowList.name,
+				counter,
 				text
 			});
 	}
