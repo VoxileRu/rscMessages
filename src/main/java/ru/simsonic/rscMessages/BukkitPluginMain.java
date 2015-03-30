@@ -15,6 +15,7 @@ import org.mcstats.MetricsLite;
 import ru.simsonic.rscMessages.Data.RowList;
 import ru.simsonic.rscMessages.Data.RowMessage;
 import ru.simsonic.rscUtilityLibrary.Bukkit.Commands.CommandAnswerException;
+import ru.simsonic.rscUtilityLibrary.Bukkit.Tools;
 import ru.simsonic.rscUtilityLibrary.TextProcessing.GenericChatCodes;
 
 public final class BukkitPluginMain extends JavaPlugin
@@ -144,7 +145,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	{
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 		final String text = GenericChatCodes.processStringStatic(message.rowList.prefix + message.text);
-		for(Player player : getServer().getOnlinePlayers())
+		for(Player player : Tools.getOnlinePlayers())
 		{
 			final boolean bpa = player.hasPermission("rscm.receive.*");
 			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
