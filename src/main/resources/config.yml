@@ -9,4 +9,4 @@ settings:
   use-metrics: true
   language: english
 internal:
-  version: 2
+  version: 3

@@ -1,4 +1,5 @@
 package ru.simsonic.rscMessages;
+
 import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -15,8 +16,10 @@ public class Fetcher extends RestartableThread
 	@Override
 	public void run()
 	{
-		// Potentially long work
-		final Map<String, RowList> newData = plugin.connection.fetch();
+		// Disable expired messages
+		plugin.database.cleanup();
+		// Retrieve messages
+		final Map<String, RowList> newData = plugin.database.fetch();
 		final BukkitScheduler scheduler = plugin.getServer().getScheduler();
 		scheduler.runTask(plugin, new Runnable()
 		{

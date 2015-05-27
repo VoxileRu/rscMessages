@@ -1,4 +1,5 @@
 package ru.simsonic.rscMessages;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -18,6 +19,16 @@ public class Database extends ConnectionMySQL
 	{
 		if(isConnected())
 			executeUpdateT("Deploy");
+	}
+	public void cleanup()
+	{
+		if(isConnected())
+			executeUpdateT("Cleanup");
+	}
+	public void Update_v2_to_v3()
+	{
+		if(isConnected())
+			executeUpdateT("Update_v2_to_v3");
 	}
 	public Map<String, RowList> fetch()
 	{

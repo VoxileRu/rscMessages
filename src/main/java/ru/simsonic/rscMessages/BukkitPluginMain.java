@@ -1,4 +1,5 @@
 package ru.simsonic.rscMessages;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public final class BukkitPluginMain extends JavaPlugin
 {
 	private   final static String chatPrefix = "{GRAY}[rscm] {MAGENTA}";
 	public    final static Logger consoleLog = Bukkit.getLogger();
-	protected final Database connection = new Database();
+	protected final Database database = new Database();
 	protected final Commands commands = new Commands(this);
 	protected final Fetcher fetcher = new Fetcher(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
@@ -40,13 +41,17 @@ public final class BukkitPluginMain extends JavaPlugin
 		// Update config
 		reloadConfig();
 		Phrases.extractTranslations(this.getDataFolder());
+		boolean updateV2V3 = false;
 		switch(getConfig().getInt("internal.version", 1))
 		{
 			case 1:
 				getConfig().set("settings.language", "english");
 				getConfig().set("internal.version", 2);
-				saveConfig();
 			case 2:
+				updateV2V3 = true;
+				getConfig().set("internal.version", 3);
+				saveConfig();
+			case 3:
 				// NEWEST VERSION
 				break;
 			default:
@@ -62,7 +67,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		// Minimum is 1 min
 		if(autoFetchInterval < 1200)
 			autoFetchInterval = 1200;
-		// Setup connection
+		// Setup database
 		final String hostname = getConfig().getString("settings.connection.hostname", "localhost:3306");
 		final String username = getConfig().getString("settings.connection.username", "user");
 		final String password = getConfig().getString("settings.connection.password", "pass");
@@ -71,7 +76,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		getConfig().set("settings.connection.username", username);
 		getConfig().set("settings.connection.password", password);
 		getConfig().set("settings.connection.prefixes", prefixes);
-		connection.initialize("rscMessages", hostname, username, password, prefixes);
+		database.initialize("rscMessages", hostname, username, password, prefixes);
 		// Metrics
 		if(getConfig().getBoolean("settings.use-metrics", true))
 			try
@@ -83,7 +88,12 @@ public final class BukkitPluginMain extends JavaPlugin
 				consoleLog.log(Level.INFO, "[rscm] Exception in Metrics:\n{0}", ex);
 			}
 		// Fetch lists and schedule them
-		connection.deploy();
+		database.deploy();
+		if(updateV2V3)
+		{
+			database.Update_v2_to_v3();
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v2 into v3");
+		}
 		fetcher.startDeamon();
 		// Done
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_ENABLED.toString());
@@ -94,7 +104,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		getServer().getScheduler().cancelTasks(this);
 		for(RowList list : lists.values())
 			list.messages.clear();
-		connection.disconnect();
+		database.disconnect();
 		lists.clear();
 		saveConfig();
 		metrics = null;

@@ -1,4 +1,5 @@
 package ru.simsonic.rscMessages.Data;
+
 import java.util.ArrayList;
 import java.util.Random;
 

@@ -1,0 +1,5 @@
+UPDATE `{DATABASE}`.`{PREFIX}messages`
+SET
+	`enabled` = b'0'
+WHERE
+	`lifetime` < CURRENT_TIMESTAMP;

@@ -1,4 +1,5 @@
 package ru.simsonic.rscMessages;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import org.bukkit.command.CommandSender;
@@ -84,13 +85,13 @@ public class Commands
 			// Create new list
 			if(!setupPermission(sender, list))
 				notEnoughPermissions();
-			plugin.connection.addList(list);
+			plugin.database.addList(list);
 		} else {
 			// Add message to the list
 			final RowList row = getList(list);
 			if(!editPermission(sender, list))
 				notEnoughPermissions();
-			plugin.connection.addMessage(row.name, text);
+			plugin.database.addMessage(row.name, text);
 		}
 		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
@@ -105,7 +106,7 @@ public class Commands
 		if(text == null || "".equals(text))
 			throw new CommandAnswerException(Phrases.ACTION_UNSPECTEXT.toString());
 		// Update message text
-		plugin.connection.editMessage(message.id, text);
+		plugin.database.editMessage(message.id, text);
 		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
@@ -118,13 +119,13 @@ public class Commands
 			// Remove whole list
 			if(!setupPermission(sender, list))
 				notEnoughPermissions();
-			plugin.connection.removeList(row.name);
+			plugin.database.removeList(row.name);
 		} else {
 			// Remove single message
 			if(!editPermission(sender, list))
 				notEnoughPermissions();
 			final RowMessage message = getMessage(row, id);
-			plugin.connection.removeMessage(message.id);
+			plugin.database.removeMessage(message.id);
 		}
 		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
@@ -143,7 +144,7 @@ public class Commands
 			switch(option.toLowerCase())
 			{
 				case "enabled":
-					plugin.connection.setMessageEnabled(message.id, parseBoolean(value));
+					plugin.database.setMessageEnabled(message.id, parseBoolean(value));
 					break;
 				default:
 					throw new CommandAnswerException(Phrases.PROPS_MSGVALID.toString());
@@ -154,16 +155,16 @@ public class Commands
 			switch(option.toLowerCase())
 			{
 				case "enabled":
-					plugin.connection.setListEnabled(list, parseBoolean(value));
+					plugin.database.setListEnabled(list, parseBoolean(value));
 					break;
 				case "random":
-					plugin.connection.setListRandom(list, parseBoolean(value));
+					plugin.database.setListRandom(list, parseBoolean(value));
 					break;
 				case "delay":
-					plugin.connection.setListDelay(list, parseInteger(value));
+					plugin.database.setListDelay(list, parseInteger(value));
 					break;
 				case "prefix":
-					plugin.connection.setListPrefix(list, value);
+					plugin.database.setListPrefix(list, value);
 					break;
 				default:
 					throw new CommandAnswerException(Phrases.PROPS_LISTVALID.toString());
