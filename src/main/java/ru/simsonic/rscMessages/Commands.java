@@ -5,7 +5,7 @@ import java.util.Collections;
 import org.bukkit.command.CommandSender;
 import ru.simsonic.rscMessages.Data.RowList;
 import ru.simsonic.rscMessages.Data.RowMessage;
-import ru.simsonic.rscUtilityLibrary.Bukkit.Commands.CommandAnswerException;
+import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
 
 public class Commands
 {

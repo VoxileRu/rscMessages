@@ -48,6 +48,6 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.otherBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.otherBracePlacement>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.importGroupsOrder>*</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.importGroupsOrder>
-        <netbeans.hint.jdkPlatform>______JDK_1.7_Update_51</netbeans.hint.jdkPlatform>
+        <netbeans.hint.jdkPlatform>______JDK_1.7_Update_72</netbeans.hint.jdkPlatform>
     </properties>
 </project-shared-configuration>

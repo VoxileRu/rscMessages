@@ -15,9 +15,9 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
 import ru.simsonic.rscMessages.Data.RowList;
 import ru.simsonic.rscMessages.Data.RowMessage;
-import ru.simsonic.rscUtilityLibrary.Bukkit.Commands.CommandAnswerException;
-import ru.simsonic.rscUtilityLibrary.Bukkit.Tools;
-import ru.simsonic.rscUtilityLibrary.TextProcessing.GenericChatCodes;
+import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
+import ru.simsonic.rscMinecraftLibrary.Bukkit.GenericChatCodes;
+import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
 
 public final class BukkitPluginMain extends JavaPlugin
 {
