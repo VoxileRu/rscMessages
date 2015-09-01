@@ -3,6 +3,8 @@ main:    ${project.groupId}.${project.artifactId}.BukkitPluginMain
 version: ${project.version}
 website: ${project.url}
 author:  SimSonic
+softdepends:
+- PlaceholderAPI
 commands:
   rscm:
     description: ${project.artifactId} command hub

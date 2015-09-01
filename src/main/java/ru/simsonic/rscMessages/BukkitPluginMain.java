@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
@@ -137,6 +138,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	{
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 		final String text = GenericChatCodes.processStringStatic(message.rowList.prefix + message.text);
+		final Plugin placeholder = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 		int counter = 0;
 		for(Player player : Tools.getOnlinePlayers())
 		{
@@ -144,7 +146,10 @@ public final class BukkitPluginMain extends JavaPlugin
 			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
 			if(bpa || bpl)
 			{
-				player.sendMessage(text);
+				if(placeholder != null && placeholder.isEnabled())
+					player.sendMessage(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text));
+				else
+					player.sendMessage(text);
 				counter += 1;
 			}
 		}
