@@ -1,2 +1,3 @@
 ALTER TABLE `{DATABASE}`.`{PREFIX}messages`
-ADD COLUMN `json` BIT(1) NOT NULL DEFAULT b'0' AFTER `text`;
+	CHANGE COLUMN `text` `text` TEXT   NOT NULL,
+	ADD    COLUMN `json`        BIT(1) NOT NULL DEFAULT b'0' AFTER `text`;

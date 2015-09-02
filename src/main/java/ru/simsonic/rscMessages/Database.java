@@ -64,10 +64,11 @@ public class Database extends ConnectionMySQL
 			while(rsMessages.next())
 			{
 				final RowMessage msg = new RowMessage();
-				msg.id = rsMessages.getInt("id");
+				msg.id      = rsMessages.getInt("id");
 				msg.enabled = rsMessages.getBoolean("enabled");
-				msg.list = rsMessages.getString("list");
-				msg.text = rsMessages.getString("text");
+				msg.list    = rsMessages.getString("list");
+				msg.text    = rsMessages.getString("text");
+				msg.isJson  = rsMessages.getBoolean("json");
 				final RowList list = result.get(msg.list.toLowerCase());
 				if(list != null)
 				{

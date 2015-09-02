@@ -100,12 +100,12 @@ public final class BukkitPluginMain extends JavaPlugin
 		if(updateV2V3)
 		{
 			database.Update_v2_to_v3();
-			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v2 into v3");
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v2 to v3");
 		}
 		if(updateV3V4)
 		{
 			database.Update_v3_to_v4();
-			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v3 into v4");
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v3 to v4");
 		}
 		fetcher.startDeamon();
 		// Look for ProtocolLib

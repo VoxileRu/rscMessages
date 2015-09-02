@@ -1,13 +1,7 @@
 package ru.simsonic.rscMessages;
 
-import java.lang.reflect.InvocationTargetException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.reflect.FieldAccessException;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.util.logging.Level;
 
 public final class SendRawMessage
@@ -22,7 +16,7 @@ public final class SendRawMessage
 	{
 		final Plugin protocolLib = plugin.getServer().getPluginManager().getPlugin("ProtocolLib");
 		isProtocollibFound = (protocolLib != null && protocolLib.isEnabled());
-		BukkitPluginMain.consoleLog.info(isProtocollibFound
+		BukkitPluginMain.consoleLog.log(Level.INFO, "[rscm] {0}", isProtocollibFound
 			? Phrases.PROTOCOLLIB_YES.toString()
 			: Phrases.PROTOCOLLIB_NO.toString());
 	}
@@ -32,11 +26,13 @@ public final class SendRawMessage
 		{
 			try
 			{
-				final PacketContainer chat = new PacketContainer(PacketType.Play.Server.CHAT);
-				chat.getChatComponents().write(0, WrappedChatComponent.fromJson(jsonMessage));
-				ProtocolLibrary.getProtocolManager().sendServerPacket(player, chat);
+				final com.comphenix.protocol.events.PacketContainer chat = new com.comphenix.protocol.events.PacketContainer(
+					com.comphenix.protocol.PacketType.Play.Server.CHAT);
+				chat.getChatComponents().write(0,
+					com.comphenix.protocol.wrappers.WrappedChatComponent.fromJson(jsonMessage));
+				com.comphenix.protocol.ProtocolLibrary.getProtocolManager().sendServerPacket(player, chat);
 				return true;
-			} catch(FieldAccessException | InvocationTargetException ex) {
+			} catch(Exception ex) {
 				BukkitPluginMain.consoleLog.log(Level.WARNING, "[rscm] ProtocolLib using exception:\n", ex);
 			}
 		}
