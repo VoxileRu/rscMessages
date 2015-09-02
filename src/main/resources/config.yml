@@ -1,5 +1,7 @@
 settings:
+  language: english
   broadcast-to-console: true
+  add-prefix-to-json: false
   connection:
     hostname: localhost:3306/minecraft
     username: user
@@ -7,6 +9,5 @@ settings:
     prefixes: rscm_
   fetch-interval-sec: 600
   use-metrics: true
-  language: english
 internal:
-  version: 3
+  version: 4

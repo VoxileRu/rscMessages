@@ -5,6 +5,7 @@ website: ${project.url}
 author:  SimSonic
 softdepends:
 - PlaceholderAPI
+- ProtocolLib
 commands:
   rscm:
     description: ${project.artifactId} command hub

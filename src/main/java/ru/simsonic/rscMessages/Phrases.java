@@ -14,6 +14,8 @@ public enum Phrases
 	PLUGIN_DISABLED   ("generic.disabled"),
 	PLUGIN_METRICS    ("generic.metrics"),
 	PLUGIN_RELOADED   ("generic.reloaded"),
+	PROTOCOLLIB_YES   ("generic.plib-y"),
+	PROTOCOLLIB_NO    ("generic.plib-n"),
 	DATA_FETCHED      ("generic.fetched"),
 	PROPS_LISTPROPS   ("props.listprops"),
 	PROPS_MSGCOUNT    ("props.msgcount"),

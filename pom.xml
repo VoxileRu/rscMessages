@@ -4,7 +4,7 @@
 
 	<groupId>ru.simsonic</groupId>
 	<artifactId>rscMessages</artifactId>
-	<version>0.6.0b</version>
+	<version>0.6.2b</version>
 	<packaging>jar</packaging>
 
 	<name>rscMessages</name>
@@ -35,6 +35,10 @@
 		<repository>
 			<id>metrics-repo</id>
 			<url>http://repo.mcstats.org/content/repositories/public/</url>
+		</repository>
+		<repository>
+			<id>dmulloy2-repo</id>
+			<url>http://repo.dmulloy2.net/content/groups/public/</url>
 		</repository>
 	</repositories>
 	
@@ -67,6 +71,12 @@
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
 			<version>1.8.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>3.6.4</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

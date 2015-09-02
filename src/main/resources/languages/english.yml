@@ -4,6 +4,8 @@ generic:
   disabled: "rscMessages has been disabled."
   reloaded: "rscMessages has been reloaded."
   fetched:  "Message lists have been fetched from database."
+  plib-y:   "ProtocolLib was found and integrated."
+  plib-n  : "ProtocolLib wasn't found. You cannot use json messages now."
 actions:
   broadcasting: "Broadcasting message from list"
   knownlists:   "Known message lists are:"

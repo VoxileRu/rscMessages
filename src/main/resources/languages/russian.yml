@@ -4,6 +4,8 @@ generic:
   disabled: "Плагин rscMessages выключен."
   reloaded: "Плагин rscMessages перезагружен."
   fetched:  "Списки сообщений получены из базы данных."
+  plib-y:   "ProtocolLib найден и подключён."
+  plib-n:   "ProtocolLib не найден. Вы не можете использовать сообщения в формате Json."
 actions:
   broadcasting: "Транслируется сообщение из списка"
   knownlists:   "Имеющиеся списки сообщений:"

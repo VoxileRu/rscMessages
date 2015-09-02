@@ -27,6 +27,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	protected final Database database = new Database();
 	protected final Commands commands = new Commands(this);
 	protected final Fetcher fetcher = new Fetcher(this);
+	protected final SendRawMessage sendRaw = new SendRawMessage(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
 	protected int autoFetchInterval = 20 * 600;
 	private MetricsLite metrics;
@@ -43,6 +44,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		reloadConfig();
 		Phrases.extractTranslations(this.getDataFolder());
 		boolean updateV2V3 = false;
+		boolean updateV3V4 = false;
 		switch(getConfig().getInt("internal.version", 1))
 		{
 			case 1:
@@ -53,6 +55,11 @@ public final class BukkitPluginMain extends JavaPlugin
 				getConfig().set("internal.version", 3);
 				saveConfig();
 			case 3:
+				updateV3V4 = true;
+				getConfig().set("settings.add-prefix-to-json", false);
+				getConfig().set("internal.version", 4);
+				saveConfig();
+			case 4:
 				// NEWEST VERSION
 				break;
 			default:
@@ -95,7 +102,14 @@ public final class BukkitPluginMain extends JavaPlugin
 			database.Update_v2_to_v3();
 			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v2 into v3");
 		}
+		if(updateV3V4)
+		{
+			database.Update_v3_to_v4();
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v3 into v4");
+		}
 		fetcher.startDeamon();
+		// Look for ProtocolLib
+		sendRaw.onEnable();
 		// Done
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_ENABLED.toString());
 	}
@@ -136,9 +150,12 @@ public final class BukkitPluginMain extends JavaPlugin
 	}
 	protected void broadcastMessage(RowMessage message)
 	{
-		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
-		final String text = GenericChatCodes.processStringStatic(message.rowList.prefix + message.text);
-		final Plugin placeholder = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		final Plugin  placeholder = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		final boolean usePlaceholders = (placeholder != null && placeholder.isEnabled());
+		final boolean jsonPrefixes = getConfig().getBoolean("settings.add-prefix-to-json", false);
+		final String  text = GenericChatCodes.processStringStatic(
+			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix)
+			+ message.text);
 		int counter = 0;
 		for(Player player : Tools.getOnlinePlayers())
 		{
@@ -146,10 +163,15 @@ public final class BukkitPluginMain extends JavaPlugin
 			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
 			if(bpa || bpl)
 			{
-				if(placeholder != null && placeholder.isEnabled())
-					player.sendMessage(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text));
-				else
-					player.sendMessage(text);
+				final String targetedText = usePlaceholders
+					? me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text)
+					: text;
+				if(message.isJson)
+				{
+					if(sendRaw.sendRawMessage(player, targetedText) == false)
+						player.sendMessage(targetedText);
+				} else
+					player.sendMessage(targetedText);
 				counter += 1;
 			}
 		}
@@ -161,6 +183,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				counter,
 				text
 			});
+		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)

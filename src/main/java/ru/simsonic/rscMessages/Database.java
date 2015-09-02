@@ -30,6 +30,11 @@ public class Database extends ConnectionMySQL
 		if(isConnected())
 			executeUpdateT("Update_v2_to_v3");
 	}
+	public void Update_v3_to_v4()
+	{
+		if(isConnected())
+			executeUpdateT("Update_v3_to_v4");
+	}
 	public Map<String, RowList> fetch()
 	{
 		final HashMap<String, RowList> result = new HashMap<>();

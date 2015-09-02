@@ -7,6 +7,7 @@ public class RowMessage
 	public String  list;
 	public boolean enabled;
 	public String  text;
+	public boolean isJson;
 	// Internal
 	public RowList rowList;
 	public long    lastBroadcast;
