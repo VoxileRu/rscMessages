@@ -22,7 +22,7 @@ import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
 
 public final class BukkitPluginMain extends JavaPlugin
 {
-	private   final static String chatPrefix = "{GRAY}[rscm] {MAGENTA}";
+	private   final static String chatPrefix = "{_DC}[rscm] {_LS}";
 	public    final static Logger consoleLog = Bukkit.getLogger();
 	protected final Database database = new Database();
 	protected final Commands commands = new Commands(this);
@@ -190,7 +190,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	{
 		try
 		{
-			switch(label.toLowerCase())
+			switch(command.getName().toLowerCase())
 			{
 				case "rscm":
 					execute(sender, args);
@@ -198,15 +198,14 @@ public final class BukkitPluginMain extends JavaPlugin
 			}
 		} catch(CommandAnswerException ex) {
 			for(String answer : ex.getMessageArray())
-				sender.sendMessage(GenericChatCodes.processStringStatic(
-					(sender instanceof ConsoleCommandSender ? "" : chatPrefix) + answer));
+				sender.sendMessage(GenericChatCodes.processStringStatic(chatPrefix + answer));
 		}
 		return true;
 	}
 	private void execute(CommandSender sender, String[] args) throws CommandAnswerException
 	{
 		if(args.length == 0)
-			throw new CommandAnswerException("{_LP}rscMessages {_DP}" + getDescription().getVersion() + "{_LP} © SimSonic.");
+			throw new CommandAnswerException(Tools.getPluginWelcome(this, null));
 		final String command = args[0].toLowerCase();
 		args = Arrays.copyOfRange(args, 1, (args.length >= 5) ? args.length : 5);
 		switch(command)
