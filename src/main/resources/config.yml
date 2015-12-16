@@ -2,6 +2,7 @@ settings:
   language: english
   broadcast-to-console: true
   add-prefix-to-json: false
+  special-list-for-newbies: ''
   connection:
     hostname: localhost:3306/minecraft
     username: user
@@ -10,4 +11,4 @@ settings:
   fetch-interval-sec: 600
   use-metrics: true
 internal:
-  version: 4
+  version: 5

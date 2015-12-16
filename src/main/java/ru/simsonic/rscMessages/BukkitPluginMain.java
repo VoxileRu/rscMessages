@@ -3,13 +3,17 @@ package ru.simsonic.rscMessages;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -20,7 +24,7 @@ import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.GenericChatCodes;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
 
-public final class BukkitPluginMain extends JavaPlugin
+public final class BukkitPluginMain extends JavaPlugin implements Listener
 {
 	private   final static String chatPrefix = "{_DC}[rscm] {_LS}";
 	public    final static Logger consoleLog = Bukkit.getLogger();
@@ -29,6 +33,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	protected final Fetcher fetcher = new Fetcher(this);
 	protected final SendRawMessage sendRaw = new SendRawMessage(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
+	protected final HashSet<Player> newbies = new HashSet<>();
 	protected int autoFetchInterval = 20 * 600;
 	private MetricsLite metrics;
 	@Override
@@ -60,6 +65,10 @@ public final class BukkitPluginMain extends JavaPlugin
 				getConfig().set("internal.version", 4);
 				saveConfig();
 			case 4:
+				getConfig().set("settings.special-list-for-newbies", "");
+				getConfig().set("internal.version", 5);
+				saveConfig();
+			case 5:
 				// NEWEST VERSION
 				break;
 			default:
@@ -125,6 +134,33 @@ public final class BukkitPluginMain extends JavaPlugin
 		metrics = null;
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_DISABLED.toString());
 	}
+	protected String getNewbiesListName()
+	{
+		final String listName = getConfig().getString("settings.special-list-for-newbies", "");
+		if(!"".equals(listName))
+			for(String knownList : lists.keySet())
+				if(knownList.equalsIgnoreCase(listName))
+					return knownList;
+		return "";
+	}
+	protected RowList getNewbiesList()
+	{
+		final String listName = getConfig().getString("settings.special-list-for-newbies", "");
+		if(!"".equals(listName))
+			for(Map.Entry<String, RowList> entry : lists.entrySet())
+				if(entry.getKey().equalsIgnoreCase(listName))
+					return entry.getValue();
+		return null;
+	}
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event)
+	{
+		final Player player = event.getPlayer();
+		if(player.hasPlayedBefore())
+			newbies.remove(player);
+		else
+			newbies.add(player);
+	}
 	protected void scheduleBroadcastTasks()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
@@ -150,18 +186,19 @@ public final class BukkitPluginMain extends JavaPlugin
 	}
 	protected void broadcastMessage(RowMessage message)
 	{
-		final Plugin  placeholder = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		final Plugin  placeholder     = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 		final boolean usePlaceholders = (placeholder != null && placeholder.isEnabled());
-		final boolean jsonPrefixes = getConfig().getBoolean("settings.add-prefix-to-json", false);
-		final String  text = GenericChatCodes.processStringStatic(
-			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix)
-			+ message.text);
+		final boolean jsonPrefixes    = getConfig().getBoolean("settings.add-prefix-to-json", false);
+		final boolean listForNewbies  = message.rowList.equals(getNewbiesList());
+		final String  text            = GenericChatCodes.processStringStatic(
+			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix) + message.text);
 		int counter = 0;
 		for(Player player : Tools.getOnlinePlayers())
 		{
 			final boolean bpa = player.hasPermission("rscm.receive.*");
 			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
-			if(bpa || bpl)
+			final boolean bpn = listForNewbies && newbies.contains(player);
+			if(bpa || bpl || bpn)
 			{
 				final String targetedText = usePlaceholders
 					? me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text)
