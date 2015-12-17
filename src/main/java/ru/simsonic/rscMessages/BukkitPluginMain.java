@@ -30,7 +30,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 	public    final static Logger consoleLog = Bukkit.getLogger();
 	protected final Database database = new Database();
 	protected final Commands commands = new Commands(this);
-	protected final Fetcher fetcher = new Fetcher(this);
+	protected final Fetcher  fetcher  = new Fetcher(this);
 	protected final SendRawMessage sendRaw = new SendRawMessage(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
 	protected final HashSet<Player> newbies = new HashSet<>();
@@ -116,6 +116,9 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			database.Update_v3_to_v4();
 			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v3 to v4");
 		}
+		// The only aim to register Listener is newbies list for now
+		if(!"".equals(getNewbiesListName()))
+			getServer().getPluginManager().registerEvents(this, this);
 		fetcher.startDeamon();
 		// Look for ProtocolLib
 		sendRaw.onEnable();
@@ -126,6 +129,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 	public void onDisable()
 	{
 		getServer().getScheduler().cancelTasks(this);
+		getServer().getServicesManager().unregisterAll(this);
 		for(RowList list : lists.values())
 			list.messages.clear();
 		database.disconnect();
@@ -134,7 +138,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 		metrics = null;
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_DISABLED.toString());
 	}
-	protected String getNewbiesListName()
+	private String getNewbiesListName()
 	{
 		final String listName = getConfig().getString("settings.special-list-for-newbies", "");
 		if(!"".equals(listName))
@@ -143,7 +147,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 					return knownList;
 		return "";
 	}
-	protected RowList getNewbiesList()
+	private RowList getNewbiesList()
 	{
 		final String listName = getConfig().getString("settings.special-list-for-newbies", "");
 		if(!"".equals(listName))
@@ -189,7 +193,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 		final Plugin  placeholder     = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 		final boolean usePlaceholders = (placeholder != null && placeholder.isEnabled());
 		final boolean jsonPrefixes    = getConfig().getBoolean("settings.add-prefix-to-json", false);
-		final boolean listForNewbies  = message.rowList.equals(getNewbiesList());
+		final boolean listForNewbies  = message.rowList.name.equals(getNewbiesListName());
 		final String  text            = GenericChatCodes.processStringStatic(
 			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix) + message.text);
 		int counter = 0;
