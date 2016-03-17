@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `{DATABASE}`.`{PREFIX}lists` (
 	`random`    BIT(1)       NOT NULL DEFAULT b'0',
 	`delay_sec` INT UNSIGNED NOT NULL DEFAULT '60',
 	`prefix`    VARCHAR(255)          DEFAULT NULL,
+	`sound`     VARCHAR(255) NULL     DEFAULT NULL;
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `id_UNIQUE` (`id`),
 	UNIQUE KEY `name_UNIQUE` (`name`)

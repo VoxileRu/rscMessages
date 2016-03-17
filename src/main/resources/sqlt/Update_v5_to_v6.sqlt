@@ -1,0 +1,2 @@
+ALTER TABLE `{DATABASE}`.`{PREFIX}lists`
+	ADD COLUMN `sound` VARCHAR(255) NULL AFTER `prefix`;

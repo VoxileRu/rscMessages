@@ -58,6 +58,8 @@ public class Commands
 			answers.add("{_LB}Random: "     + (row.random  ? "{_LG}true" : "{_LR}false"));
 			answers.add("{_LB}Delay: {_LG}" + row.delay_sec + " sec");
 			answers.add("{_LB}Prefix: {_R}" + row.prefix);
+			if(row.sound != null && !"".equals(row.sound))
+				answers.add("{_LB}Sound: {_R}" + row.sound);
 			int on = 0, off = 0;
 			for(RowMessage msg : row.messages)
 				if(msg.enabled)

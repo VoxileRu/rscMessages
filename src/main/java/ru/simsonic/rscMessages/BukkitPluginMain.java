@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -50,6 +50,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 		Phrases.extractTranslations(this.getDataFolder());
 		boolean updateV2V3 = false;
 		boolean updateV3V4 = false;
+		boolean updateV5V6 = false;
 		switch(getConfig().getInt("internal.version", 1))
 		{
 			case 1:
@@ -69,6 +70,10 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				getConfig().set("internal.version", 5);
 				saveConfig();
 			case 5:
+				updateV5V6 = true;
+				getConfig().set("internal.version", 6);
+				saveConfig();
+			case 6:
 				// NEWEST VERSION
 				break;
 			default:
@@ -116,6 +121,11 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			database.Update_v3_to_v4();
 			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v3 to v4");
 		}
+		if(updateV5V6)
+		{
+			database.Update_v5_to_v6();
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v5 to v6");
+		}
 		// The only aim to register Listener is newbies list for now
 		if(!"".equals(getNewbiesListName()))
 			getServer().getPluginManager().registerEvents(this, this);
@@ -146,15 +156,6 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				if(knownList.equalsIgnoreCase(listName))
 					return knownList;
 		return "";
-	}
-	private RowList getNewbiesList()
-	{
-		final String listName = getConfig().getString("settings.special-list-for-newbies", "");
-		if(!"".equals(listName))
-			for(Map.Entry<String, RowList> entry : lists.entrySet())
-				if(entry.getKey().equalsIgnoreCase(listName))
-					return entry.getValue();
-		return null;
 	}
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)
@@ -197,6 +198,15 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 		final String  text            = GenericChatCodes.processStringStatic(
 			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix) + message.text);
 		int counter = 0;
+		Sound sound = null;
+		if(message.rowList.sound != null && !"".equals(message.rowList.sound))
+		{
+			try
+			{
+				sound = Sound.valueOf(message.rowList.sound);
+			} catch(IllegalArgumentException ex) {
+			}
+		}
 		for(Player player : Tools.getOnlinePlayers())
 		{
 			final boolean bpa = player.hasPermission("rscm.receive.*");
@@ -204,6 +214,10 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			final boolean bpn = listForNewbies && newbies.contains(player);
 			if(bpa || bpl || bpn)
 			{
+				// Play sound
+				if(sound != null)
+					player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+				// Send message
 				final String targetedText = usePlaceholders
 					? me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text)
 					: text;

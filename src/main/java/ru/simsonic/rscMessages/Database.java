@@ -35,6 +35,11 @@ public class Database extends ConnectionMySQL
 		if(isConnected())
 			executeUpdateT("Update_v3_to_v4");
 	}
+	public void Update_v5_to_v6()
+	{
+		if(isConnected())
+			executeUpdateT("Update_v5_to_v6");
+	}
 	public Map<String, RowList> fetch()
 	{
 		final HashMap<String, RowList> result = new HashMap<>();
@@ -45,12 +50,13 @@ public class Database extends ConnectionMySQL
 			while(rsLists.next())
 			{
 				final RowList list = new RowList();
-				list.id        = rsLists.getInt("id");
-				list.name      = rsLists.getString("name");
+				list.id        = rsLists.getInt    ("id");
+				list.name      = rsLists.getString ("name");
 				list.enabled   = rsLists.getBoolean("enabled");
 				list.random    = rsLists.getBoolean("random");
-				list.delay_sec = rsLists.getInt("delay_sec");
-				list.prefix    = rsLists.getString("prefix");
+				list.delay_sec = rsLists.getInt    ("delay_sec");
+				list.prefix    = rsLists.getString ("prefix");
+				list.sound     = rsLists.getString ("sound");
 				if(list.prefix == null)
 					list.prefix = "";
 				result.put(list.name.toLowerCase(), list);

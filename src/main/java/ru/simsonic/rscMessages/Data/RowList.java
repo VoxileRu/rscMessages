@@ -12,6 +12,7 @@ public class RowList
 	public boolean random;
 	public int     delay_sec;
 	public String  prefix;
+	public String  sound;
 	// Internal
 	public ArrayList<RowMessage> messages = new ArrayList<>();
 	private static final Random rnd = new Random();

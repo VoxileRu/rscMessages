@@ -11,4 +11,4 @@ settings:
   fetch-interval-sec: 600
   use-metrics: true
 internal:
-  version: 5
+  version: 6
