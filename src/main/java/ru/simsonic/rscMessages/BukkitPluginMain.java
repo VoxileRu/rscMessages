@@ -171,6 +171,8 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			newbies.remove(player);
 		else
 			newbies.add(player);
+		if(player.hasPermission("rscm.admin"))
+			updating.onAdminJoin(player, true);
 	}
 	protected void scheduleBroadcastTasks()
 	{
@@ -369,6 +371,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 					"{YELLOW}/rscm set <list> [id] <option> [value]",
 					"{YELLOW}/rscm help [1|2]",
 					"{YELLOW}/rscm reload",
+					"{YELLOW}/rscm update [do]",
 				});
 			case "reload":
 				if(sender.hasPermission("rscm.admin"))
@@ -377,6 +380,17 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 					getPluginLoader().disablePlugin(this);
 					getPluginLoader().enablePlugin(this);
 					consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_RELOADED.toString());
+				}
+				return;
+			case "update":
+				if(sender.hasPermission("rscm.admin"))
+				{
+					if(args.length > 0 && "do".equals(args[0]))
+					{
+						updating.doUpdate(sender instanceof Player ? (Player)sender : null);
+					} else {
+						updating.checkUpdate(sender instanceof Player ? (Player)sender : null);
+					}
 				}
 				return;
 		}
