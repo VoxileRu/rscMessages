@@ -18,16 +18,18 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
+import ru.simsonic.rscMessages.API.Settings;
 import ru.simsonic.rscMessages.Data.RowList;
 import ru.simsonic.rscMessages.Data.RowMessage;
+import ru.simsonic.rscMessages.Updater.BukkitUpdater;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.GenericChatCodes;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
 
 public final class BukkitPluginMain extends JavaPlugin implements Listener
 {
-	private   final static String chatPrefix = "{_DC}[rscm] {_LS}";
 	public    final static Logger consoleLog = Bukkit.getLogger();
+	protected final BukkitUpdater updating   = new BukkitUpdater(this, Settings.updaterURL, Settings.chatPrefix);
 	protected final Database database = new Database();
 	protected final Commands commands = new Commands(this);
 	protected final Fetcher  fetcher  = new Fetcher(this);
@@ -133,6 +135,10 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 		// Look for ProtocolLib
 		sendRaw.onEnable();
 		// Done
+		updating.onEnable();
+		for(Player online : Tools.getOnlinePlayers())
+			if(online.hasPermission("rscm.admin"))
+				updating.onAdminJoin(online, false);
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_ENABLED.toString());
 	}
 	@Override
@@ -253,7 +259,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			}
 		} catch(CommandAnswerException ex) {
 			for(String answer : ex.getMessageArray())
-				sender.sendMessage(GenericChatCodes.processStringStatic(chatPrefix + answer));
+				sender.sendMessage(GenericChatCodes.processStringStatic(Settings.chatPrefix + answer));
 		}
 		return true;
 	}
