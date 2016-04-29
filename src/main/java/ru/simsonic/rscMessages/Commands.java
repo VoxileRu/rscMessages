@@ -175,7 +175,7 @@ public class Commands
 		plugin.fetcher.startDeamon();
 		throw new CommandAnswerException(Phrases.ACTION_DONE.toString());
 	}
-	private boolean parseBoolean(String value) throws CommandAnswerException
+	public static boolean parseBoolean(String value) throws CommandAnswerException
 	{
 		switch(value.toLowerCase())
 		{
@@ -183,19 +183,22 @@ public class Commands
 			case "true":
 			case "yes":
 			case "on":
+			case "1":
 				return true;
 			case "disable":
 			case "false":
 			case "no":
 			case "off":
+			case "0":
 				return false;
 			case "":
 			default:
 				throw new CommandAnswerException(Phrases.ACTION_INCORRECT_V.toString());
 		}
 	}
-	private int parseInteger(String value) throws CommandAnswerException
+	public static int parseInteger(String value) throws CommandAnswerException
 	{
+		value = value.replace("#", "");
 		try
 		{
 			return Integer.parseInt(value);

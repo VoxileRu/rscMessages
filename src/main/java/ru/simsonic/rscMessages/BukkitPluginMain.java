@@ -282,8 +282,8 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				int info_id = -1;
 				try
 				{
-					info_id = Integer.parseInt(args[1]);
-				} catch(NumberFormatException ex) {
+					info_id = Commands.parseInteger(args[1]);
+				} catch(CommandAnswerException ex) {
 				}
 				commands.info(sender, args[0], info_id);
 				return;
@@ -297,9 +297,9 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				String edit_text;
 				try
 				{
-					edit_id = Integer.parseInt(args[1]);
+					edit_id = Commands.parseInteger(args[1]);
 					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
-				} catch(NumberFormatException ex) {
+				} catch(CommandAnswerException ex) {
 					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 1, args.length), " ");
 				}
 				commands.edit(sender, args[0], edit_id, edit_text);
@@ -309,8 +309,8 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				int remove_id = -1;
 				try
 				{
-					remove_id = Integer.parseInt(args[1]);
-				} catch(NumberFormatException ex) {
+					remove_id = Commands.parseInteger(args[1]);
+				} catch(CommandAnswerException ex) {
 				}
 				commands.remove(sender, args[0], remove_id);
 				return;
@@ -322,10 +322,10 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				String set_value;
 				try
 				{
-					set_id = Integer.parseInt(args[1]);
+					set_id = Commands.parseInteger(args[1]);
 					set_option = args[2];
 					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 3, args.length), " ");
-				} catch(NumberFormatException ex) {
+				} catch(CommandAnswerException ex) {
 					set_option = args[1];
 					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				}
@@ -336,8 +336,8 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				int broadcast_id = -1;
 				try
 				{
-					broadcast_id = Integer.parseInt(args[1]);
-				} catch(NumberFormatException ex) {
+					broadcast_id = Commands.parseInteger(args[1]);
+				} catch(CommandAnswerException ex) {
 				}
 				// <list> [#]
 				commands.broadcast(sender, args[0], broadcast_id);
