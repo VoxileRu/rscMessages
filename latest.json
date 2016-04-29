@@ -1,5 +1,5 @@
 {
-	version: "v0.6.8b",
+	version: "0.6.8b",
 	notes: [
 		"§9NEW§r: Automatic updater!",
 		"§cFIX§r: Fixed that #303 is a number now!"
