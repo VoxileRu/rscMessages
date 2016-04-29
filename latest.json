@@ -1,5 +1,8 @@
 {
-	version: "v0.7.0b",
-	note: "§9NEW§r: Automatic updater!",
-	url: "https://ci.methuselah.ru/job/rscMessages/60/artifact/target/rscMessages_v0.7.0b.jar"
+	version: "v0.6.8b",
+	notes: [
+		"§9NEW§r: Automatic updater!",
+		"§cFIX§r: Fixed that #303 is a number now!"
+	],
+	url: "https://ci.methuselah.ru/job/rscMessages/61/artifact/target/rscMessages_v0.6.8b.jar"
 }
