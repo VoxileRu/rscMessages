@@ -73,6 +73,9 @@ public final class BukkitUpdater implements Listener
 		@Override
 		public void run()
 		{
+			threadCheck.run();
+			if(latestToLines() == null)
+				return;
 			runLine("Downloading update...");
 			if(downloadUpdate())
 			{
@@ -146,7 +149,7 @@ public final class BukkitUpdater implements Listener
 	private ArrayList<String> latestToLines()
 	{
 		// THERE IS NO UPDATE
-		if(plugin.getDescription().getVersion().equals(latest.version))
+		if(plugin.getDescription().getVersion().equalsIgnoreCase(latest.version))
 			return null;
 		// THERE IS AN UPDATE
 		final ArrayList<String> result = new ArrayList<>();
