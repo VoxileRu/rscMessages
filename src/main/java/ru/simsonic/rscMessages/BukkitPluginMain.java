@@ -21,7 +21,7 @@ import org.mcstats.MetricsLite;
 import ru.simsonic.rscMessages.API.Settings;
 import ru.simsonic.rscMessages.Data.RowList;
 import ru.simsonic.rscMessages.Data.RowMessage;
-import ru.simsonic.rscMessages.Updater.BukkitUpdater;
+import ru.simsonic.rscMinecraftLibrary.AutoUpdater.BukkitUpdater;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.GenericChatCodes;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
@@ -207,6 +207,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix) + message.text);
 		int counter = 0;
 		Sound sound = null;
+		message.rowList.sound = "ANVIL_LAND";
 		if(message.rowList.sound != null && !"".equals(message.rowList.sound))
 		{
 			try

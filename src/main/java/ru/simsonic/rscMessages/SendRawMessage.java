@@ -1,8 +1,8 @@
 package ru.simsonic.rscMessages;
 
+import java.util.logging.Level;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import java.util.logging.Level;
 
 public final class SendRawMessage
 {
