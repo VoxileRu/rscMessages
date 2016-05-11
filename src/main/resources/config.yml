@@ -1,16 +1,27 @@
 settings:
+  # There are only `english` and `russian` languages presented.
+  # You can create your own translation based on one of them.
+  # If so, please make pull request on GitHub! :)
   language: english
+  # Should broadcasting messages be translated in server's console?
   broadcast-to-console: true
+  # When your message is marked as `json`, should it be prefixed by list's prefix?
+  add-prefix-to-json: false
+  # Players who first joined to server since [now() - interval-sec]
+  # will receive messages from that special list. Even without permissions.
   for-newbies:
     special-list-name: ''
     interval-sec:      604800
-  add-prefix-to-json: false
+  # Server address, schema, credentials and prefix for tables.
   connection:
     hostname: localhost:3306/minecraft
     username: user
     password: pass
     prefixes: rscm_
+  # How ofter should plugin reread lists and messages from database?
   fetch-interval-sec: 600
+  # Send data to mcstats.org?
   use-metrics: true
+
 internal:
   version: 7
