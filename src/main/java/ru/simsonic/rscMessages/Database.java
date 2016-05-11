@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import ru.simsonic.rscCommonsLibrary.ConnectionMySQL;
-import ru.simsonic.rscMessages.Data.RowList;
-import ru.simsonic.rscMessages.Data.RowMessage;
+import ru.simsonic.rscMessages.API.RowList;
+import ru.simsonic.rscMessages.API.RowMessage;
 
 public class Database extends ConnectionMySQL
 {

@@ -14,10 +14,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
+import ru.simsonic.rscMessages.API.BukkitCommands;
+import ru.simsonic.rscMessages.API.RowList;
+import ru.simsonic.rscMessages.API.RowMessage;
 import ru.simsonic.rscMessages.API.Settings;
 import ru.simsonic.rscMessages.Bukkit.BukkitSettings;
-import ru.simsonic.rscMessages.Data.RowList;
-import ru.simsonic.rscMessages.Data.RowMessage;
 import ru.simsonic.rscMinecraftLibrary.AutoUpdater.BukkitUpdater;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.GenericChatCodes;
@@ -26,13 +27,13 @@ import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
 public final class BukkitPluginMain extends JavaPlugin
 {
 	public    final static Logger  consoleLog = Bukkit.getLogger();
-	protected final Settings       settings   = new BukkitSettings(this);
+	public    final Settings       settings   = new BukkitSettings(this);
+	public    final Database       database   = new Database();
+	public    final Fetcher        fetcher    = new Fetcher(this);
 	protected final BukkitUpdater  updating   = new BukkitUpdater(this, Settings.UPDATER_URL, Settings.CHAT_PREFIX);
-	protected final Database       database   = new Database();
-	protected final Commands       commands   = new Commands(this);
-	protected final Fetcher        fetcher    = new Fetcher(this);
+	protected final BukkitCommands commands   = new BukkitCommands(this);
 	protected final SendRawMessage sendRaw    = new SendRawMessage(this);
-	protected final HashMap<String, RowList> lists = new HashMap<>();
+	public    final HashMap<String, RowList> lists = new HashMap<>();
 	private MetricsLite metrics;
 	@Override
 	public void onLoad()
@@ -127,13 +128,13 @@ public final class BukkitPluginMain extends JavaPlugin
 			}, delay_ticks, delay_ticks);
 		}
 	}
-	protected void broadcastList(RowList list)
+	public void broadcastList(RowList list)
 	{
 		final RowMessage message = list.getNextMessage(getServer().getWorlds().get(0).getTime());
 		if(message != null)
 			broadcastMessage(message);
 	}
-	protected void broadcastMessage(RowMessage message)
+	public void broadcastMessage(RowMessage message)
 	{
 		final Plugin  placeholder     = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 		final boolean usePlaceholders = (placeholder != null && placeholder.isEnabled());
@@ -218,7 +219,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				int info_id = -1;
 				try
 				{
-					info_id = Commands.parseInteger(args[1]);
+					info_id = BukkitCommands.parseInteger(args[1]);
 				} catch(CommandAnswerException ex) {
 					throw ex;
 				}
@@ -234,7 +235,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				String edit_text;
 				try
 				{
-					edit_id = Commands.parseInteger(args[1]);
+					edit_id = BukkitCommands.parseInteger(args[1]);
 					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
 				} catch(CommandAnswerException ex) {
 					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 1, args.length), " ");
@@ -246,7 +247,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				int remove_id = -1;
 				try
 				{
-					remove_id = Commands.parseInteger(args[1]);
+					remove_id = BukkitCommands.parseInteger(args[1]);
 				} catch(CommandAnswerException ex) {
 					throw ex;
 				}
@@ -260,7 +261,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				String set_value;
 				try
 				{
-					set_id = Commands.parseInteger(args[1]);
+					set_id = BukkitCommands.parseInteger(args[1]);
 					set_option = args[2];
 					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 3, args.length), " ");
 				} catch(CommandAnswerException ex) {
@@ -274,7 +275,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				int broadcast_id = -1;
 				try
 				{
-					broadcast_id = Commands.parseInteger(args[1]);
+					broadcast_id = BukkitCommands.parseInteger(args[1]);
 				} catch(CommandAnswerException ex) {
 					throw ex;
 				}

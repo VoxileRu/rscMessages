@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.scheduler.BukkitScheduler;
 import ru.simsonic.rscCommonsLibrary.RestartableThread;
-import ru.simsonic.rscMessages.Data.RowList;
+import ru.simsonic.rscMessages.API.RowList;
 
 public class Fetcher extends RestartableThread
 {
