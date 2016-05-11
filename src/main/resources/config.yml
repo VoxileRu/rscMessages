@@ -1,8 +1,10 @@
 settings:
   language: english
   broadcast-to-console: true
+  for-newbies:
+    special-list-name: ''
+    interval-sec:      604800
   add-prefix-to-json: false
-  special-list-for-newbies: ''
   connection:
     hostname: localhost:3306/minecraft
     username: user
@@ -11,4 +13,4 @@ settings:
   fetch-interval-sec: 600
   use-metrics: true
 internal:
-  version: 6
+  version: 7
