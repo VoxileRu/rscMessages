@@ -1,8 +1,10 @@
 {
-	version: "0.6.8b",
+	version: "0.7.0b",
+	snapshot: "false",
 	notes: [
-		"§9NEW§r: Automatic updater!",
-		"§cFIX§r: Fixed that #303 is a number now!"
+		"§9NEW§r: Playing sound for player when message received.",
+		"§9NEW§r: Newbies are newbies for fixed realtime interval.",
+		"§cFIX§r: Fixed in-game command argument parser."
 	],
-	url: "https://ci.methuselah.ru/job/rscMessages/61/artifact/target/rscMessages_v0.6.8b.jar"
+	url: "https://ci.methuselah.ru/job/rscMessages/64/artifact/target/rscMessages_v0.7.0b.jar"
 }
