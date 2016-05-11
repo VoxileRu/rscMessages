@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
 import ru.simsonic.rscMessages.API.Settings;
+import ru.simsonic.rscMessages.Bukkit.BukkitSettings;
 import ru.simsonic.rscMessages.Data.RowList;
 import ru.simsonic.rscMessages.Data.RowMessage;
 import ru.simsonic.rscMinecraftLibrary.AutoUpdater.BukkitUpdater;
@@ -26,81 +27,52 @@ import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.GenericChatCodes;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.Tools;
 
-public final class BukkitPluginMain extends JavaPlugin implements Listener
+public final class BukkitPluginMain extends JavaPlugin
 {
-	public    final static Logger consoleLog = Bukkit.getLogger();
-	protected final BukkitUpdater updating   = new BukkitUpdater(this, Settings.updaterURL, Settings.chatPrefix);
-	protected final Database database = new Database();
-	protected final Commands commands = new Commands(this);
-	protected final Fetcher  fetcher  = new Fetcher(this);
-	protected final SendRawMessage sendRaw = new SendRawMessage(this);
+	public    final static Logger  consoleLog = Bukkit.getLogger();
+	protected final Settings       settings   = new BukkitSettings(this);
+	protected final BukkitUpdater  updating   = new BukkitUpdater(this, Settings.UPDATER_URL, Settings.CHAT_PREFIX);
+	protected final Database       database   = new Database();
+	protected final Commands       commands   = new Commands(this);
+	protected final Fetcher        fetcher    = new Fetcher(this);
+	protected final SendRawMessage sendRaw    = new SendRawMessage(this);
 	protected final HashMap<String, RowList> lists = new HashMap<>();
-	protected final HashSet<Player> newbies = new HashSet<>();
-	protected int autoFetchInterval = 20 * 600;
 	private MetricsLite metrics;
 	@Override
 	public void onLoad()
 	{
-		saveDefaultConfig();
+		settings.onLoad();
 		consoleLog.log(Level.INFO, "[rscm] rscMessages has been loaded.");
 	}
 	@Override
 	public void onEnable()
 	{
-		// Update config
-		reloadConfig();
-		Phrases.extractTranslations(this.getDataFolder());
-		boolean updateV2V3 = false;
-		boolean updateV3V4 = false;
-		boolean updateV5V6 = false;
-		switch(getConfig().getInt("internal.version", 1))
-		{
-			case 1:
-				getConfig().set("settings.language", "english");
-				getConfig().set("internal.version", 2);
-			case 2:
-				updateV2V3 = true;
-				getConfig().set("internal.version", 3);
-				saveConfig();
-			case 3:
-				updateV3V4 = true;
-				getConfig().set("settings.add-prefix-to-json", false);
-				getConfig().set("internal.version", 4);
-				saveConfig();
-			case 4:
-				getConfig().set("settings.special-list-for-newbies", "");
-				getConfig().set("internal.version", 5);
-				saveConfig();
-			case 5:
-				updateV5V6 = true;
-				getConfig().set("internal.version", 6);
-				saveConfig();
-			case 6:
-				// NEWEST VERSION
-				break;
-			default:
-				// UNSUPPORTED VERSION?
-				break;
-		}
 		// Read settings
-		final String language = getConfig().getString("settings.language", "english");
-		Phrases.fill(this, language);
-		getConfig().set("settings.broadcast-to-console", getConfig().getBoolean("settings.broadcast-to-console", true));
-		getConfig().set("settings.use-metrics", getConfig().getBoolean("settings.use-metrics", true));
-		autoFetchInterval = 20 * getConfig().getInt("settings.fetch-interval-sec", 600);
-		// Minimum is 1 min
-		if(autoFetchInterval < 1200)
-			autoFetchInterval = 1200;
+		settings.onEnable();
+		updating.onEnable();
+		Phrases.extractTranslations(getDataFolder());
+		Phrases.fill(this, settings.getLanguage());
 		// Setup database
-		final String hostname = getConfig().getString("settings.connection.hostname", "localhost:3306");
-		final String username = getConfig().getString("settings.connection.username", "user");
-		final String password = getConfig().getString("settings.connection.password", "pass");
-		final String prefixes = getConfig().getString("settings.connection.prefixes", "rscm_");
-		getConfig().set("settings.connection.hostname", hostname);
-		getConfig().set("settings.connection.username", username);
-		getConfig().set("settings.connection.password", password);
-		getConfig().set("settings.connection.prefixes", prefixes);
-		database.initialize("rscMessages", hostname, username, password, prefixes);
+		database.initialize(settings.getDatabaseCP());
+		database.deploy();
+		if(settings.doUpdateDB_v2v3())
+		{
+			database.update_v2_to_v3();
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated to v3");
+		}
+		if(settings.doUpdateDB_v3v4())
+		{
+			database.update_v3_to_v4();
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated to v4");
+		}
+		if(settings.doUpdateDB_v5v6())
+		{
+			database.update_v5_to_v6();
+			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated to v6");
+		}
+		// Apply all configuration changes
+		saveConfig();
+		reloadConfig();
 		// Metrics
 		if(getConfig().getBoolean("settings.use-metrics", true))
 			try
@@ -111,26 +83,6 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			} catch(IOException ex) {
 				consoleLog.log(Level.INFO, "[rscm] Exception in Metrics:\n{0}", ex);
 			}
-		// Fetch lists and schedule them
-		database.deploy();
-		if(updateV2V3)
-		{
-			database.Update_v2_to_v3();
-			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v2 to v3");
-		}
-		if(updateV3V4)
-		{
-			database.Update_v3_to_v4();
-			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v3 to v4");
-		}
-		if(updateV5V6)
-		{
-			database.Update_v5_to_v6();
-			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated from v5 to v6");
-		}
-		// The only aim to register Listener is newbies list for now
-		if(!"".equals(getNewbiesListName()))
-			getServer().getPluginManager().registerEvents(this, this);
 		fetcher.startDeamon();
 		// Look for ProtocolLib
 		sendRaw.onEnable();
@@ -146,33 +98,21 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 	{
 		getServer().getScheduler().cancelTasks(this);
 		getServer().getServicesManager().unregisterAll(this);
+		database.disconnect();
 		for(RowList list : lists.values())
 			list.messages.clear();
-		database.disconnect();
 		lists.clear();
-		saveConfig();
 		metrics = null;
 		consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_DISABLED.toString());
 	}
 	private String getNewbiesListName()
 	{
-		final String listName = getConfig().getString("settings.special-list-for-newbies", "");
+		final String listName = settings.getNewbiesListName();
 		if(!"".equals(listName))
-			for(String knownList : lists.keySet())
-				if(knownList.equalsIgnoreCase(listName))
-					return knownList;
+			for(String list : lists.keySet())
+				if(list.equalsIgnoreCase(listName))
+					return list;
 		return "";
-	}
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(player.hasPlayedBefore())
-			newbies.remove(player);
-		else
-			newbies.add(player);
-		if(player.hasPermission("rscm.admin"))
-			updating.onAdminJoin(player, true);
 	}
 	protected void scheduleBroadcastTasks()
 	{
@@ -207,21 +147,20 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix) + message.text);
 		int counter = 0;
 		Sound sound = null;
-		message.rowList.sound = "ANVIL_LAND";
 		if(message.rowList.sound != null && !"".equals(message.rowList.sound))
-		{
-			try
-			{
-				sound = Sound.valueOf(message.rowList.sound);
-			} catch(IllegalArgumentException ex) {
-			}
-		}
+			for(Sound check : Sound.values())
+				if(check.name().equalsIgnoreCase(message.rowList.sound))
+				{
+					sound = check;
+					break;
+				}
 		for(Player player : Tools.getOnlinePlayers())
 		{
+			final long    ppt = (System.currentTimeMillis() - player.getFirstPlayed()) / 1000L;
+			final boolean bpn = listForNewbies && !player.hasPermission("rscm.admin") && (ppt < settings.getNewbiesInterval());
 			final boolean bpa = player.hasPermission("rscm.receive.*");
 			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
-			final boolean bpn = listForNewbies && newbies.contains(player);
-			if(bpa || bpl || bpn)
+			if(bpn || bpa || bpl)
 			{
 				// Play sound
 				if(sound != null)
@@ -262,7 +201,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 			}
 		} catch(CommandAnswerException ex) {
 			for(String answer : ex.getMessageArray())
-				sender.sendMessage(GenericChatCodes.processStringStatic(Settings.chatPrefix + answer));
+				sender.sendMessage(GenericChatCodes.processStringStatic(Settings.CHAT_PREFIX + answer));
 		}
 		return true;
 	}
@@ -285,6 +224,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				{
 					info_id = Commands.parseInteger(args[1]);
 				} catch(CommandAnswerException ex) {
+					throw ex;
 				}
 				commands.info(sender, args[0], info_id);
 				return;
@@ -312,6 +252,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				{
 					remove_id = Commands.parseInteger(args[1]);
 				} catch(CommandAnswerException ex) {
+					throw ex;
 				}
 				commands.remove(sender, args[0], remove_id);
 				return;
@@ -339,6 +280,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 				{
 					broadcast_id = Commands.parseInteger(args[1]);
 				} catch(CommandAnswerException ex) {
+					throw ex;
 				}
 				// <list> [#]
 				commands.broadcast(sender, args[0], broadcast_id);
@@ -355,6 +297,7 @@ public final class BukkitPluginMain extends JavaPlugin implements Listener
 						Phrases.HELP_LIST_RANDOM.toString(),
 						Phrases.HELP_LIST_DELAY.toString(),
 						Phrases.HELP_LIST_PREFIX.toString(),
+						Phrases.HELP_LIST_SOUND.toString(),
 						Phrases.HELP_OPTIONS_MSG.toString(),
 						Phrases.HELP_MSG_ENABLED.toString(),
 					});

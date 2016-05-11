@@ -23,7 +23,7 @@ props:
   listprops: "Свойства списка сообщений"
   msgcount:  "Сообщений в списке"
   msgprops:  "Свойства сообщения"
-  listvalid: "Доступные опции для списков: {_R}enabled, random, delay, prefix."
+  listvalid: "Доступные опции для списков: {_R}enabled, random, delay, prefix, sound."
   msgvalid:  "Единственная доступная опция для сообщений: {_R}enabled."
   msgtext:   "Текст сообщения (включая префикс списка):"
 help:
@@ -34,4 +34,5 @@ help:
   list-random:  "{YELLOW}random  {MAGENTA}(только {GOLD}true{MAGENTA} означает `включено`, иначе `выключено`)"
   list-delay:   "{YELLOW}delay   {MAGENTA}(количество секунд)"
   list-prefix:  "{YELLOW}prefix  {MAGENTA}(префикс; оставьте <text> пустым, чтобы стереть)"
+  list-sound:   "{YELLOW}sound   {MAGENTA}(элемент множества Sound; оставьте пустым, чтобы стереть)"
   msg-enabled:  "{YELLOW}enabled {MAGENTA}(только {GOLD}true{MAGENTA} означает `включено`, иначе `выключено`)"

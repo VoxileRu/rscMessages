@@ -25,17 +25,17 @@ public class Database extends ConnectionMySQL
 		if(isConnected())
 			executeUpdateT("Cleanup");
 	}
-	public void Update_v2_to_v3()
+	public void update_v2_to_v3()
 	{
 		if(isConnected())
 			executeUpdateT("Update_v2_to_v3");
 	}
-	public void Update_v3_to_v4()
+	public void update_v3_to_v4()
 	{
 		if(isConnected())
 			executeUpdateT("Update_v3_to_v4");
 	}
-	public void Update_v5_to_v6()
+	public void update_v5_to_v6()
 	{
 		if(isConnected())
 			executeUpdateT("Update_v5_to_v6");
@@ -142,7 +142,11 @@ public class Database extends ConnectionMySQL
 	}
 	public void setListPrefix(String list, String prefix)
 	{
-		setListOption(list, "prefix", (prefix != null) ? "'" + prefix + "'" : "''");
+		setListOption(list, "prefix", (prefix != null ? "'" + prefix + "'" : "''"));
+	}
+	public void setListSound(String list, String sound)
+	{
+		setListOption(list, "sound", (sound != null ? "'" + sound + "'" : "''"));
 	}
 	private void setMessageOption(int id, String option, String value)
 	{

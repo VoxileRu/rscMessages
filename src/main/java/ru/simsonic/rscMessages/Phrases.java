@@ -42,6 +42,7 @@ public enum Phrases
 	HELP_LIST_RANDOM  ("help.list-random"),
 	HELP_LIST_DELAY   ("help.list-delay"),
 	HELP_LIST_PREFIX  ("help.list-prefix"),
+	HELP_LIST_SOUND   ("help.list-sound"),
 	HELP_MSG_ENABLED  ("help.msg-enabled"),
 	;
 	private final String node;

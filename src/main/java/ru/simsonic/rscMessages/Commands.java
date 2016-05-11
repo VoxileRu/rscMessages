@@ -56,17 +56,18 @@ public class Commands
 			answers.add("{_LS}" + Phrases.PROPS_LISTPROPS.toString() + " {_LC}" + row.name + "{_LS}:");
 			answers.add("{_LB}Enabled: "    + (row.enabled ? "{_LG}true" : "{_LR}false"));
 			answers.add("{_LB}Random: "     + (row.random  ? "{_LG}true" : "{_LR}false"));
-			answers.add("{_LB}Delay: {_LG}" + row.delay_sec + " sec");
-			answers.add("{_LB}Prefix: {_R}" + row.prefix);
-			if(row.sound != null && !"".equals(row.sound))
-				answers.add("{_LB}Sound: {_R}" + row.sound);
+			answers.add("{_LB}Delay: {_LS}" + row.delay_sec + " sec");
+			answers.add("{_LB}Prefix: {_R}{_LS}\"" + row.prefix + "{_R}{_LS}\"");
+			answers.add("{_LB}Sound: {_R}"  + (row.sound != null && !"".equals(row.sound)
+				? row.sound.toUpperCase()
+				: "no sound"));
 			int on = 0, off = 0;
 			for(RowMessage msg : row.messages)
 				if(msg.enabled)
 					on += 1;
 				else
 					off += 1;
-			answers.add("{_LB}" + Phrases.PROPS_MSGCOUNT.toString() + ": {_LP}" + row.messages.size() + "{_LB}"
+			answers.add("{_LB}" + Phrases.PROPS_MSGCOUNT.toString() + ": {_LS}" + row.messages.size() + "{_LB}"
 				+ " ({_LG}" + on + "{_LB}/{_LR}" + off + "{_LB}).");
 		} else {
 			// Show message info
@@ -168,6 +169,9 @@ public class Commands
 				case "prefix":
 					plugin.database.setListPrefix(list, value);
 					break;
+				case "sound":
+					plugin.database.setListSound(list, value);
+					break;
 				default:
 					throw new CommandAnswerException(Phrases.PROPS_LISTVALID.toString());
 			}
@@ -198,9 +202,11 @@ public class Commands
 	}
 	public static int parseInteger(String value) throws CommandAnswerException
 	{
-		value = value.replace("#", "");
+		if(value == null || "".equals(value))
+			return -1;
 		try
 		{
+			value = value.replace("#", "");
 			return Integer.parseInt(value);
 		} catch(IllegalArgumentException ex) {
 		}

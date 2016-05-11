@@ -40,7 +40,7 @@ public class Fetcher extends RestartableThread
 					{
 						plugin.fetcher.startDeamon();
 					}
-				}, plugin.autoFetchInterval);
+				}, plugin.settings.getAutofetchInterval());
 			}
 		});
 	}
