@@ -72,7 +72,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsLists.close();
 		} catch(SQLException ex) {
-			logger.log(Level.WARNING, "Exception in fetch(1): {0}", ex);
+			logger.log(Level.WARNING, "Exception in fetch(lists): {0}", ex);
 		}
 		try(final ResultSet rsMessages = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}messages` ORDER BY `id` ASC;"))
 		{
@@ -93,7 +93,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsMessages.close();
 		} catch(SQLException ex) {
-			logger.log(Level.WARNING, "Exception in fetch(2): {0}", ex);
+			logger.log(Level.WARNING, "Exception in fetch(messages): {0}", ex);
 		}
 		return result;
 	}
