@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import org.bukkit.Sound;
 import ru.simsonic.rscCommonsLibrary.ConnectionMySQL;
 import ru.simsonic.rscMessages.API.RowList;
 import ru.simsonic.rscMessages.API.RowMessage;
@@ -56,9 +57,17 @@ public class Database extends ConnectionMySQL
 				list.random    = rsLists.getBoolean("random");
 				list.delay_sec = rsLists.getInt    ("delay_sec");
 				list.prefix    = rsLists.getString ("prefix");
-				list.sound     = rsLists.getString ("sound");
 				if(list.prefix == null)
 					list.prefix = "";
+				list.sound     = null;
+				final String soundName = rsLists.getString ("sound");
+				if(soundName != null && !"".equals(soundName))
+					for(Sound sound : Sound.values())
+						if(sound.name().equalsIgnoreCase(soundName))
+						{
+							list.sound = sound;
+							break;
+						}
 				result.put(list.name.toLowerCase(), list);
 			}
 			rsLists.close();

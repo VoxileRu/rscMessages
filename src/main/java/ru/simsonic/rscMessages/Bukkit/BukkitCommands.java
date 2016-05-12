@@ -61,7 +61,7 @@ public class BukkitCommands
 			answers.add("{_LB}Delay: {_LS}" + row.delay_sec + " sec");
 			answers.add("{_LB}Prefix: {_R}{_LS}\"" + row.prefix + "{_R}{_LS}\"");
 			answers.add("{_LB}Sound: {_R}"  + (row.sound != null && !"".equals(row.sound)
-				? row.sound.toUpperCase()
+				? row.sound.name()
 				: "no sound"));
 			int on = 0, off = 0;
 			for(RowMessage msg : row.messages)

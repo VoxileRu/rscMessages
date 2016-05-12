@@ -140,14 +140,6 @@ public final class BukkitPluginMain extends JavaPlugin
 		final String  text            = GenericChatCodes.processStringStatic(
 			((message.isJson && !jsonPrefixes) ? "" : message.rowList.prefix) + message.text);
 		int counter = 0;
-		Sound sound = null;
-		if(message.rowList.sound != null && !"".equals(message.rowList.sound))
-			for(Sound check : Sound.values())
-				if(check.name().equalsIgnoreCase(message.rowList.sound))
-				{
-					sound = check;
-					break;
-				}
 		for(Player player : Tools.getOnlinePlayers())
 		{
 			final long    ppt = (System.currentTimeMillis() - player.getFirstPlayed()) / 1000L;
@@ -157,8 +149,8 @@ public final class BukkitPluginMain extends JavaPlugin
 			if(bpn || bpa || bpl)
 			{
 				// Play sound
-				if(sound != null)
-					player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+				if(message.rowList.sound != null)
+					player.playSound(player.getLocation(), message.rowList.sound, 1.0f, 1.0f);
 				// Send message
 				final String targetedText = usePlaceholders
 					? me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text)

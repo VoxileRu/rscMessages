@@ -1,6 +1,7 @@
 package ru.simsonic.rscMessages.API;
 
 import java.util.ArrayList;
+import org.bukkit.Sound;
 
 public class RowList
 {
@@ -11,7 +12,7 @@ public class RowList
 	public boolean random;
 	public int     delay_sec;
 	public String  prefix;
-	public String  sound;
+	public Sound   sound;
 	// Internal
 	public transient ArrayList<RowMessage> messages = new ArrayList<>();
 }
