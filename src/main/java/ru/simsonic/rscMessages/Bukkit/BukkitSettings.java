@@ -18,7 +18,8 @@ public class BukkitSettings implements Settings
 	private boolean updateDB_V2V3 = false;
 	private boolean updateDB_V3V4 = false;
 	private boolean updateDB_V5V6 = false;
-	private long    autofetchInterval = DEFAULT_AUTOFETCH_INTERVAL;
+	private boolean broadcastToConsole = false;
+	private long    autofetchInterval  = DEFAULT_AUTOFETCH_INTERVAL;
 	public BukkitSettings(BukkitPluginMain plugin)
 	{
 		this.plugin = plugin;
@@ -89,8 +90,9 @@ public class BukkitSettings implements Settings
 			autofetchInterval = DEFAULT_AUTOFETCH_INTERVAL;
 			config.set("settings.fetch-interval-sec", autofetchInterval);
 		}
-		config.set("settings.broadcast-to-console", config.getBoolean("settings.broadcast-to-console", true));
-		config.set("settings.use-metrics", config.getBoolean("settings.use-metrics", true));
+		broadcastToConsole = config.getBoolean("settings.broadcast-to-console", true);
+		config.set("settings.broadcast-to-console", broadcastToConsole);
+		config.set("settings.use-metrics",          config.getBoolean("settings.use-metrics", true));
 	}
 	@Override
 	public boolean doUpdateDB_v2v3()
@@ -143,5 +145,15 @@ public class BukkitSettings implements Settings
 	public long getNewbiesInterval()
 	{
 		return 20 * plugin.getConfig().getLong("settings.for-newbies.interval-sec", DEFAULT_NEWBIES_INTERVAL);
+	}
+	@Override
+	public boolean getBroadcastToConsole()
+	{
+		return broadcastToConsole;
+	}
+	@Override
+	public boolean getUseMetrics()
+	{
+		return plugin.getConfig().getBoolean("settings.use-metrics", true);
 	}
 }

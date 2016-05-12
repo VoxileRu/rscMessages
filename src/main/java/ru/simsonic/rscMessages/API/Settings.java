@@ -15,8 +15,10 @@ public interface Settings
 	public abstract boolean doUpdateDB_v5v6();
 	public abstract ConnectionParams getDatabaseCP();
 	
-	public abstract String getLanguage();
-	public abstract long   getAutofetchInterval();
-	public abstract String getNewbiesListName();
-	public abstract long   getNewbiesInterval();
+	public abstract String  getLanguage();
+	public abstract long    getAutofetchInterval();
+	public abstract String  getNewbiesListName();
+	public abstract long    getNewbiesInterval();
+	public abstract boolean getBroadcastToConsole();
+	public abstract boolean getUseMetrics();
 }

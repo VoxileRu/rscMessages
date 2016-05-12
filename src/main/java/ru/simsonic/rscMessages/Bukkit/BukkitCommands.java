@@ -1,8 +1,10 @@
-package ru.simsonic.rscMessages.API;
+package ru.simsonic.rscMessages.Bukkit;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import org.bukkit.command.CommandSender;
+import ru.simsonic.rscMessages.API.RowList;
+import ru.simsonic.rscMessages.API.RowMessage;
 import ru.simsonic.rscMessages.BukkitPluginMain;
 import ru.simsonic.rscMessages.Phrases;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;

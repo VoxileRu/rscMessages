@@ -1,8 +1,10 @@
 package ru.simsonic.rscMessages;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
@@ -14,10 +16,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
-import ru.simsonic.rscMessages.API.BukkitCommands;
 import ru.simsonic.rscMessages.API.RowList;
 import ru.simsonic.rscMessages.API.RowMessage;
 import ru.simsonic.rscMessages.API.Settings;
+import ru.simsonic.rscMessages.Bukkit.BukkitCommands;
 import ru.simsonic.rscMessages.Bukkit.BukkitSettings;
 import ru.simsonic.rscMinecraftLibrary.AutoUpdater.BukkitUpdater;
 import ru.simsonic.rscMinecraftLibrary.Bukkit.CommandAnswerException;
@@ -34,6 +36,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	protected final BukkitCommands commands   = new BukkitCommands(this);
 	protected final SendRawMessage sendRaw    = new SendRawMessage(this);
 	public    final HashMap<String, RowList> lists = new HashMap<>();
+	private   final static Random  rnd = new Random();
 	private MetricsLite metrics;
 	@Override
 	public void onLoad()
@@ -44,7 +47,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
-		// Read settings
+		// Read settings and localization strings
 		settings.onEnable();
 		updating.onEnable();
 		Phrases.extractTranslations(getDataFolder());
@@ -71,7 +74,7 @@ public final class BukkitPluginMain extends JavaPlugin
 		saveConfig();
 		reloadConfig();
 		// Metrics
-		if(getConfig().getBoolean("settings.use-metrics", true))
+		if(settings.getUseMetrics())
 			try
 			{
 				metrics = new MetricsLite(this);
@@ -80,11 +83,11 @@ public final class BukkitPluginMain extends JavaPlugin
 			} catch(IOException ex) {
 				consoleLog.log(Level.INFO, "[rscm] Exception in Metrics:\n{0}", ex);
 			}
+		// Fetch latest lists and messages from database
 		fetcher.startDeamon();
-		// Look for ProtocolLib
+		// Looking for other useful plugins: ProtocolLib, etc.
 		sendRaw.onEnable();
 		// Done
-		updating.onEnable();
 		for(Player online : Tools.getOnlinePlayers())
 			if(online.hasPermission("rscm.admin"))
 				updating.onAdminJoin(online, false);
@@ -111,7 +114,7 @@ public final class BukkitPluginMain extends JavaPlugin
 					return list;
 		return "";
 	}
-	protected void scheduleBroadcastTasks()
+	public void scheduleBroadcastTasks()
 	{
 		final BukkitScheduler scheduler = getServer().getScheduler();
 		for(final RowList list : lists.values())
@@ -127,12 +130,6 @@ public final class BukkitPluginMain extends JavaPlugin
 				}
 			}, delay_ticks, delay_ticks);
 		}
-	}
-	public void broadcastList(RowList list)
-	{
-		final RowMessage message = list.getNextMessage(getServer().getWorlds().get(0).getTime());
-		if(message != null)
-			broadcastMessage(message);
 	}
 	public void broadcastMessage(RowMessage message)
 	{
@@ -175,7 +172,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				counter += 1;
 			}
 		}
-		if(getConfig().getBoolean("settings.broadcast-to-console", true))
+		if(settings.getBroadcastToConsole())
 			consoleLog.log(Level.INFO, "[rscm] {0} ''{1}'' ({2}):\n{3}", new Object[]
 			{
 				Phrases.ACTION_BROADCAST.toString(),
@@ -184,6 +181,46 @@ public final class BukkitPluginMain extends JavaPlugin
 				text
 			});
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
+	}
+	public void broadcastList(RowList list)
+	{
+		final RowMessage message = getNextMessage(list);
+		if(message != null)
+			broadcastMessage(message);
+	}
+	private RowMessage getNextMessage(RowList rowList)
+	{
+		if(rowList.messages.isEmpty())
+			return null;
+		if(rowList.random)
+		{
+			final ArrayList<RowMessage> veryOldMessages = new ArrayList<>();
+			final ArrayList<RowMessage> enabledMessages = new ArrayList<>();
+			final long currentTime  = getServer().getWorlds().get(0).getTime();
+			final long veryLongTime = 3 * rowList.messages.size() * 20 * rowList.delay_sec;
+			for(RowMessage msg : rowList.messages)
+				if(msg.enabled)
+				{
+					if(msg.lastBroadcast == 0 || (currentTime - msg.lastBroadcast) > veryLongTime)
+						veryOldMessages.add(msg);
+					enabledMessages.add(msg);
+				}
+			ArrayList<RowMessage> selectFrom = veryOldMessages.isEmpty() ? enabledMessages : veryOldMessages;
+			if(selectFrom.isEmpty())
+				return null;
+			return selectFrom.get(rnd.nextInt(selectFrom.size()));
+		}
+		RowMessage largestTime = rowList.messages.get(0);
+		for(RowMessage msg : rowList.messages)
+		{
+			if(msg.enabled == false)
+				continue;
+			if(msg.lastBroadcast == 0)
+				return msg;
+			if(msg.lastBroadcast < largestTime.lastBroadcast)
+				largestTime = msg;
+		}
+		return largestTime.enabled ? largestTime : null;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
