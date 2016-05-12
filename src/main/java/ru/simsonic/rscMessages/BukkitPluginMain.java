@@ -2,13 +2,11 @@ package ru.simsonic.rscMessages;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,7 +30,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	public    final Settings       settings   = new BukkitSettings(this);
 	public    final Database       database   = new Database();
 	public    final Fetcher        fetcher    = new Fetcher(this);
-	protected final BukkitUpdater  updating   = new BukkitUpdater(this, Settings.UPDATER_URL, Settings.CHAT_PREFIX);
+	public    final BukkitUpdater  updating   = new BukkitUpdater(this, Settings.UPDATER_URL, Settings.CHAT_PREFIX);
 	protected final BukkitCommands commands   = new BukkitCommands(this);
 	protected final SendRawMessage sendRaw    = new SendRawMessage(this);
 	public    final HashMap<String, RowList> lists = new HashMap<>();
@@ -222,7 +220,7 @@ public final class BukkitPluginMain extends JavaPlugin
 			switch(command.getName().toLowerCase())
 			{
 				case "rscm":
-					execute(sender, args);
+					commands.execute(sender, args);
 					break;
 			}
 		} catch(CommandAnswerException ex) {
@@ -230,140 +228,5 @@ public final class BukkitPluginMain extends JavaPlugin
 				sender.sendMessage(GenericChatCodes.processStringStatic(Settings.CHAT_PREFIX + answer));
 		}
 		return true;
-	}
-	private void execute(CommandSender sender, String[] args) throws CommandAnswerException
-	{
-		if(args.length == 0)
-			throw new CommandAnswerException(Tools.getPluginWelcome(this, null));
-		final String command = args[0].toLowerCase();
-		args = Arrays.copyOfRange(args, 1, (args.length >= 5) ? args.length : 5);
-		switch(command)
-		{
-			case "l":
-			case "list":
-				commands.list(sender, args[0]);
-				return;
-			case "i":
-			case "info":
-				int info_id = -1;
-				try
-				{
-					info_id = BukkitCommands.parseInteger(args[1]);
-				} catch(CommandAnswerException ex) {
-					throw ex;
-				}
-				commands.info(sender, args[0], info_id);
-				return;
-			case "a":
-			case "add":
-				commands.add(sender, args[0], GenericChatCodes.glue(Arrays.copyOfRange(args, 1, args.length), " "));
-				return;
-			case "e":
-			case "edit":
-				int edit_id = -1;
-				String edit_text;
-				try
-				{
-					edit_id = BukkitCommands.parseInteger(args[1]);
-					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
-				} catch(CommandAnswerException ex) {
-					edit_text = GenericChatCodes.glue(Arrays.copyOfRange(args, 1, args.length), " ");
-				}
-				commands.edit(sender, args[0], edit_id, edit_text);
-				return;
-			case "r":
-			case "remove":
-				int remove_id = -1;
-				try
-				{
-					remove_id = BukkitCommands.parseInteger(args[1]);
-				} catch(CommandAnswerException ex) {
-					throw ex;
-				}
-				commands.remove(sender, args[0], remove_id);
-				return;
-			// rscm set <list> [#] <option> <value>
-			case "s":
-			case "set":
-				int set_id = -1;
-				String set_option;
-				String set_value;
-				try
-				{
-					set_id = BukkitCommands.parseInteger(args[1]);
-					set_option = args[2];
-					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 3, args.length), " ");
-				} catch(CommandAnswerException ex) {
-					set_option = args[1];
-					set_value = GenericChatCodes.glue(Arrays.copyOfRange(args, 2, args.length), " ");
-				}
-				commands.set(sender, args[0], set_id, set_option, set_value);
-				return;
-			case "b":
-			case "broadcast":
-				int broadcast_id = -1;
-				try
-				{
-					broadcast_id = BukkitCommands.parseInteger(args[1]);
-				} catch(CommandAnswerException ex) {
-					throw ex;
-				}
-				// <list> [#]
-				commands.broadcast(sender, args[0], broadcast_id);
-				return;
-			case "h":
-			case "help":
-				// PAGE 2
-				if("2".equals(args[0]))
-				{
-					throw new CommandAnswerException(new String[]
-					{
-						Phrases.HELP_OPTIONS_LIST.toString(),
-						Phrases.HELP_LIST_ENABLED.toString(),
-						Phrases.HELP_LIST_RANDOM.toString(),
-						Phrases.HELP_LIST_DELAY.toString(),
-						Phrases.HELP_LIST_PREFIX.toString(),
-						Phrases.HELP_LIST_SOUND.toString(),
-						Phrases.HELP_OPTIONS_MSG.toString(),
-						Phrases.HELP_MSG_ENABLED.toString(),
-					});
-				}
-				// PAGE 1
-				throw new CommandAnswerException(new String[]
-				{
-					Phrases.HELP_USAGE.toString(),
-					"{YELLOW}/rscm list [list]",
-					"{YELLOW}/rscm info <list> [id]",
-					"{YELLOW}/rscm broadcast <list> [id]",
-					"{YELLOW}/rscm add <list> [text]",
-					"{YELLOW}/rscm edit <list> <id> <text>",
-					"{YELLOW}/rscm remove <list> [id]",
-					"{YELLOW}/rscm set <list> [id] <option> [value]",
-					"{YELLOW}/rscm help [1|2]",
-					"{YELLOW}/rscm reload",
-					"{YELLOW}/rscm update [do]",
-				});
-			case "reload":
-				if(sender.hasPermission("rscm.admin"))
-				{
-					reloadConfig();
-					getPluginLoader().disablePlugin(this);
-					getPluginLoader().enablePlugin(this);
-					consoleLog.log(Level.INFO, "[rscm] {0}", Phrases.PLUGIN_RELOADED.toString());
-				}
-				return;
-			case "update":
-				if(sender.hasPermission("rscm.admin"))
-				{
-					if(args.length > 0 && "do".equals(args[0]))
-					{
-						updating.doUpdate(sender instanceof Player ? (Player)sender : null);
-					} else {
-						updating.checkUpdate(sender instanceof Player ? (Player)sender : null);
-					}
-				}
-				return;
-		}
-		throw new CommandAnswerException(Phrases.ACTION_WRONGCMD.toString());
 	}
 }
