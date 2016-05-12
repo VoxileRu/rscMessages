@@ -1,10 +1,8 @@
 {
-	version: "0.7.0b",
+	version: "0.7.1b",
 	snapshot: "false",
 	notes: [
-		"§9NEW§r: Playing sound for player when message received.",
-		"§9NEW§r: Newbies are newbies for fixed realtime interval.",
-		"§cFIX§r: Fixed in-game command argument parser."
+		"§cFIX§r: Some little internal improvements."
 	],
-	url: "https://ci.methuselah.ru/job/rscMessages/66/artifact/target/rscMessages_v0.7.0b.jar"
+	url: "https://ci.methuselah.ru/job/rscMessages/67/artifact/target/rscMessages_v0.7.1b.jar"
 }
