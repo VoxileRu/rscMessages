@@ -30,7 +30,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	public    final Settings       settings   = new BukkitSettings(this);
 	public    final Database       database   = new Database();
 	public    final Fetcher        fetcher    = new Fetcher(this);
-	public    final BukkitUpdater  updating   = new BukkitUpdater(this, Settings.UPDATER_URL, Settings.CHAT_PREFIX);
+	public    final BukkitUpdater  updating   = new BukkitUpdater(this, Settings.UPDATER_URL, Settings.CHAT_PREFIX, Settings.UPDATE_CMD);
 	protected final BukkitCommands commands   = new BukkitCommands(this);
 	protected final SendRawMessage sendRaw    = new SendRawMessage(this);
 	public    final HashMap<String, RowList> lists = new HashMap<>();
