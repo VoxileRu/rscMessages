@@ -3,13 +3,15 @@ main:    ${project.groupId}.${project.artifactId}.BukkitPluginMain
 version: ${project.version}
 website: ${project.url}
 author:  SimSonic
-softdepends:
-- PlaceholderAPI
+load:    POSTWORLD
+
+softdepend:
 - ProtocolLib
+- PlaceholderAPI
 
 commands:
   rscm:
-    alias: m
+    aliases: [m]
     description: ${project.artifactId} command hub
     usage: /<command> do what?
 
