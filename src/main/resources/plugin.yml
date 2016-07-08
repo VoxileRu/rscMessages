@@ -6,10 +6,13 @@ author:  SimSonic
 softdepends:
 - PlaceholderAPI
 - ProtocolLib
+
 commands:
   rscm:
+    alias: m
     description: ${project.artifactId} command hub
     usage: /<command> do what?
+
 permissions:
   rscm.admin:
     description: Access to all functions
