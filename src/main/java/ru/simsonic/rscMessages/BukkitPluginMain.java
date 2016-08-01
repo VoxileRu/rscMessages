@@ -131,8 +131,7 @@ public final class BukkitPluginMain extends JavaPlugin
 	}
 	public void broadcastMessage(RowMessage message)
 	{
-		final Plugin  placeholder     = getServer().getPluginManager().getPlugin("PlaceholderAPI");
-		final boolean usePlaceholders = (placeholder != null && placeholder.isEnabled());
+		final boolean usePlaceholders = getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
 		final boolean jsonPrefixes    = getConfig().getBoolean("settings.add-prefix-to-json", false);
 		final boolean listForNewbies  = message.rowList.name.equals(getNewbiesListName());
 		final String  text            = GenericChatCodes.processStringStatic(
