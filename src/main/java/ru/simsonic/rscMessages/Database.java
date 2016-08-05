@@ -2,9 +2,9 @@ package ru.simsonic.rscMessages;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.bukkit.Sound;
 import ru.simsonic.rscCommonsLibrary.ConnectionMySQL;
 import ru.simsonic.rscMessages.API.RowList;
@@ -12,40 +12,67 @@ import ru.simsonic.rscMessages.API.RowMessage;
 
 public class Database extends ConnectionMySQL
 {
-	Database()
-	{
-		super(BukkitPluginMain.consoleLog);
-	}
 	public void deploy()
 	{
-		if(isConnected())
-			executeUpdateT("Deploy");
+		try
+		{
+			if(isConnected())
+				executeUpdateT("Deploy");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void cleanup()
 	{
-		if(isConnected())
-			executeUpdateT("Cleanup");
+		try
+		{
+			if(isConnected())
+				executeUpdateT("Cleanup");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void update_v2_to_v3()
 	{
-		if(isConnected())
-			executeUpdateT("Update_v2_to_v3");
+		try
+		{
+			if(isConnected())
+				executeUpdateT("Update_v2_to_v3");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void update_v3_to_v4()
 	{
-		if(isConnected())
-			executeUpdateT("Update_v3_to_v4");
+		try
+		{
+			if(isConnected())
+				executeUpdateT("Update_v3_to_v4");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void update_v5_to_v6()
 	{
-		if(isConnected())
-			executeUpdateT("Update_v5_to_v6");
+		try
+		{
+			if(isConnected())
+				executeUpdateT("Update_v5_to_v6");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public Map<String, RowList> fetch()
 	{
 		final HashMap<String, RowList> result = new HashMap<>();
-		if(!isConnected())
-			return result;
+		try
+		{
+			if(!isConnected())
+				return result;
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+			return Collections.EMPTY_MAP;
+		}
 		try(final ResultSet rsLists = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}lists` ORDER BY `id` ASC;"))
 		{
 			while(rsLists.next())
@@ -72,7 +99,7 @@ public class Database extends ConnectionMySQL
 			}
 			rsLists.close();
 		} catch(SQLException ex) {
-			logger.log(Level.WARNING, "Exception in fetch(lists): {0}", ex);
+			BukkitPluginMain.consoleLog.warning(ex.toString());
 		}
 		try(final ResultSet rsMessages = executeQuery("SELECT * FROM `{DATABASE}`.`{PREFIX}messages` ORDER BY `id` ASC;"))
 		{
@@ -93,49 +120,79 @@ public class Database extends ConnectionMySQL
 			}
 			rsMessages.close();
 		} catch(SQLException ex) {
-			logger.log(Level.WARNING, "Exception in fetch(messages): {0}", ex);
+			BukkitPluginMain.consoleLog.warning(ex.toString());
 		}
 		return result;
 	}
 	public void addList(String list)
 	{
-		// This place should include some security filters...
-		setupQueryTemplate("{LIST}", list);
-		executeUpdate("INSERT IGNORE INTO `{DATABASE}`.`{PREFIX}lists` (`name`) VALUES ('{LIST}');");
+		try
+		{
+			// This place should include some security filters...
+			setupQueryTemplate("{LIST}", list);
+			executeUpdate("INSERT IGNORE INTO `{DATABASE}`.`{PREFIX}lists` (`name`) VALUES ('{LIST}');");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void addMessage(String list, String message)
 	{
-		// This place should include some security filters...
-		setupQueryTemplate("{LIST}", list);
-		setupQueryTemplate("{MESSAGE}", message);
-		executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}messages` (`list`, `text`) VALUES ('{LIST}', '{MESSAGE}');");
+		try
+		{
+			// This place should include some security filters...
+			setupQueryTemplate("{LIST}", list);
+			setupQueryTemplate("{MESSAGE}", message);
+			executeUpdate("INSERT INTO `{DATABASE}`.`{PREFIX}messages` (`list`, `text`) VALUES ('{LIST}', '{MESSAGE}');");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void editMessage(int id, String text)
 	{
-		// This place should include some security filters...
-		setupQueryTemplate("{ID}", Integer.toString(id));
-		setupQueryTemplate("{TEXT}", text);
-		executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}messages` SET `text` = '{TEXT}' WHERE `id` = '{ID}';");
+		try
+		{
+			// This place should include some security filters...
+			setupQueryTemplate("{ID}", Integer.toString(id));
+			setupQueryTemplate("{TEXT}", text);
+			executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}messages` SET `text` = '{TEXT}' WHERE `id` = '{ID}';");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void removeList(String list)
 	{
-		// This place should include some security filters...
-		setupQueryTemplate("{LIST}", list);
-		executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}messages` WHERE `list` = '{LIST}';");
-		executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}lists` WHERE `name` = '{LIST}';");
+		try
+		{
+			// This place should include some security filters...
+			setupQueryTemplate("{LIST}", list);
+			executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}messages` WHERE `list` = '{LIST}';");
+			executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}lists` WHERE `name` = '{LIST}';");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void removeMessage(int id)
 	{
-		// This place should include some security filters...
-		setupQueryTemplate("{ID}", Integer.toString(id));
-		executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}messages` WHERE `id` = '{ID}';");
+		try
+		{
+			// This place should include some security filters...
+			setupQueryTemplate("{ID}", Integer.toString(id));
+			executeUpdate("DELETE FROM `{DATABASE}`.`{PREFIX}messages` WHERE `id` = '{ID}';");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	private void setListOption(String list, String option, String value)
 	{
-		setupQueryTemplate("{LIST}", list);
-		setupQueryTemplate("{OPTION}", option);
-		setupQueryTemplate("{VALUE}", value);
-		executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}lists` SET `{OPTION}` = {VALUE} WHERE `name` = '{LIST}';");
+		try
+		{
+			setupQueryTemplate("{LIST}", list);
+			setupQueryTemplate("{OPTION}", option);
+			setupQueryTemplate("{VALUE}", value);
+			executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}lists` SET `{OPTION}` = {VALUE} WHERE `name` = '{LIST}';");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void setListEnabled(String list, boolean value)
 	{
@@ -159,10 +216,15 @@ public class Database extends ConnectionMySQL
 	}
 	private void setMessageOption(int id, String option, String value)
 	{
-		setupQueryTemplate("{ID}", Integer.toString(id));
-		setupQueryTemplate("{OPTION}", option);
-		setupQueryTemplate("{VALUE}", value);
-		executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}messages` SET `{OPTION}` = {VALUE} WHERE `id` = '{ID}';");
+		try
+		{
+			setupQueryTemplate("{ID}", Integer.toString(id));
+			setupQueryTemplate("{OPTION}", option);
+			setupQueryTemplate("{VALUE}", value);
+			executeUpdate("UPDATE `{DATABASE}`.`{PREFIX}messages` SET `{OPTION}` = {VALUE} WHERE `id` = '{ID}';");
+		} catch(SQLException ex) {
+			BukkitPluginMain.consoleLog.warning(ex.toString());
+		}
 	}
 	public void setMessageEnabled(int id, boolean value)
 	{
