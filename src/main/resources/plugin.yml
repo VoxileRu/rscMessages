@@ -19,5 +19,5 @@ permissions:
   rscm.admin:
     description: Access to all functions
     default: op
-    children:
-      rscm.receive.*: false
+  rscm.receive.*:
+    default: false

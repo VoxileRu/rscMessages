@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mcstats.MetricsLite;
@@ -139,10 +138,16 @@ public final class BukkitPluginMain extends JavaPlugin
 		int counter = 0;
 		for(Player player : Tools.getOnlinePlayers())
 		{
+			final String permissionAll = "rscm.receive.*";
+			final String permissionLst = "rscm.receive." + message.rowList.name.toLowerCase();
 			final long    ppt = (System.currentTimeMillis() - player.getFirstPlayed()) / 1000L;
 			final boolean bpn = listForNewbies && !player.hasPermission("rscm.admin") && (ppt < settings.getNewbiesInterval());
-			final boolean bpa = player.hasPermission("rscm.receive.*");
-			final boolean bpl = player.hasPermission("rscm.receive." + message.rowList.name.toLowerCase());
+			final boolean bpa = player.hasPermission(permissionAll) && (player.isOp()
+				? player.isPermissionSet(permissionAll)
+				: true);
+			final boolean bpl = player.hasPermission(permissionLst) && (player.isOp()
+				? player.isPermissionSet(permissionLst)
+				: true);
 			if(bpn || bpa || bpl)
 			{
 				// Play sound
@@ -167,7 +172,7 @@ public final class BukkitPluginMain extends JavaPlugin
 				Phrases.ACTION_BROADCAST.toString(),
 				message.rowList.name,
 				counter,
-				text
+				text,
 			});
 		message.lastBroadcast = this.getServer().getWorlds().get(0).getTime();
 	}
