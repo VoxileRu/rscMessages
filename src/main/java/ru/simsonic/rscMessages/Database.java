@@ -87,10 +87,10 @@ public class Database extends ConnectionMySQL
 				if(list.prefix == null)
 					list.prefix = "";
 				list.sound     = null;
-				final String soundName = rsLists.getString ("sound");
+				final String soundName = rsLists.getString("sound");
 				if(soundName != null && !"".equals(soundName))
 					for(Sound sound : Sound.values())
-						if(sound.name().equalsIgnoreCase(soundName))
+						if(sound.name().equalsIgnoreCase(soundName.trim()))
 						{
 							list.sound = sound;
 							break;
