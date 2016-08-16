@@ -1,3 +1,5 @@
 ALTER TABLE `{DATABASE}`.`{PREFIX}messages`
-	CHANGE COLUMN `text` `text` TEXT   NOT NULL,
+	CHANGE COLUMN `text` `text` TEXT   NOT NULL;
+
+ALTER TABLE `{DATABASE}`.`{PREFIX}messages`
 	ADD    COLUMN `json`        BIT(1) NOT NULL DEFAULT b'0' AFTER `text`;

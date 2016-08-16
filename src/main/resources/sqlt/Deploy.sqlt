@@ -6,17 +6,18 @@ CREATE TABLE IF NOT EXISTS `{DATABASE}`.`{PREFIX}lists` (
 	`delay_sec` INT UNSIGNED NOT NULL DEFAULT '60',
 	`prefix`    VARCHAR(255)          DEFAULT NULL,
 	`sound`     VARCHAR(255) NULL     DEFAULT NULL,
-	PRIMARY KEY (`id`),
-	UNIQUE KEY `id_UNIQUE` (`id`),
-	UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE='InnoDB' AUTO_INCREMENT = 1 DEFAULT CHARSET = 'utf8';
+	PRIMARY KEY               (`id`),
+	UNIQUE  KEY `id_UNIQUE`   (`id`),
+	UNIQUE  KEY `name_UNIQUE` (`name`)
+) ENGINE = 'InnoDB' AUTO_INCREMENT = 1 DEFAULT CHARSET = 'utf8';
 
 CREATE TABLE IF NOT EXISTS `{DATABASE}`.`{PREFIX}messages` (
 	`id`       INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`list`     VARCHAR(16)  NOT NULL,
 	`enabled`  BIT(1)       NOT NULL DEFAULT b'1',
-	`text`     VARCHAR(255) NOT NULL,
+	`text`     TEXT         NOT NULL,
+	`json`     BIT(1)       NOT NULL DEFAULT b'0',
 	`lifetime` TIMESTAMP        NULL DEFAULT NULL,
-	PRIMARY KEY (`id`),
-	UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE='InnoDB' AUTO_INCREMENT = 1 DEFAULT CHARSET = 'utf8';
+	PRIMARY KEY             (`id`),
+	UNIQUE  KEY `id_UNIQUE` (`id`)
+) ENGINE = 'InnoDB' AUTO_INCREMENT = 1 DEFAULT CHARSET = 'utf8';

@@ -54,16 +54,19 @@ public final class BukkitPluginMain extends JavaPlugin
 		database.deploy();
 		if(settings.doUpdateDB_v2v3())
 		{
+			// LIFETIME UPDATE
 			database.update_v2_to_v3();
 			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated to v3");
 		}
 		if(settings.doUpdateDB_v3v4())
 		{
+			// JSON UPDATE
 			database.update_v3_to_v4();
 			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated to v4");
 		}
 		if(settings.doUpdateDB_v5v6())
 		{
+			// SOUND UPDATE
 			database.update_v5_to_v6();
 			consoleLog.log(Level.INFO, "[rscm] Database schema has been updated to v6");
 		}

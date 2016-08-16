@@ -24,4 +24,4 @@ settings:
   use-metrics: true
 
 internal:
-  version: 7
+  version: 8

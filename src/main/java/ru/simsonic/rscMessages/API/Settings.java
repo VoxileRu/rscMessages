@@ -7,6 +7,7 @@ public interface Settings
 	public static final String UPDATER_URL = "http://simsonic.github.io/rscMessages/latest.json";
 	public static final String CHAT_PREFIX = "{_DC}[rscm] {_LS}";
 	public static final String UPDATE_CMD  = "/rscm update do";
+	public static final int    CONFIG_VER  = 8;
 	
 	public abstract void onLoad();
 	public abstract void onEnable();

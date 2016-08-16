@@ -51,32 +51,32 @@ public class BukkitSettings implements Settings
 			case 1:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v1 -> v2).");
 				config.set("settings.language", "english");
-				config.set("internal.version", 2);
 			case 2:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v2 -> v3).");
 				updateDB_V2V3 = true;
-				config.set("internal.version", 3);
 			case 3:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v3 -> v4).");
 				updateDB_V3V4 = true;
 				config.set("settings.add-prefix-to-json", false);
-				config.set("internal.version", 4);
 			case 4:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v4 -> v5).");
 				config.set("settings.special-list-for-newbies", DEFAULT_NEWBIES_LISTNAME);
-				config.set("internal.version", 5);
 			case 5:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v5 -> v6).");
 				updateDB_V5V6 = true;
-				config.set("internal.version", 6);
 			case 6:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v6 -> v7).");
 				config.set("settings.for-newbies.special-list-name",
 					config.getString("settings.special-list-for-newbies", DEFAULT_NEWBIES_LISTNAME));
-				config.set("settings.for-newbies.interval-sec", DEFAULT_NEWBIES_INTERVAL);
+				config.set("settings.for-newbies.interval-sec",          DEFAULT_NEWBIES_INTERVAL);
 				config.set("settings.special-list-for-newbies", null);
-				config.set("internal.version", 7);
 			case 7:
+				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v7 -> v8).");
+				updateDB_V2V3 = true;
+				updateDB_V3V4 = true;
+				updateDB_V5V6 = true;
+				config.set("internal.version", CONFIG_VER);
+			case CONFIG_VER:
 				// NEWEST VERSION
 				break;
 			default:
