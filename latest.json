@@ -1,9 +1,9 @@
 {
-	version: "0.7.5b",
+	version: "0.7.6b",
 	snapshot: "false",
 	notes: [
-		"§cFIX§r: OPs doesn't receive ALL lists."
+		"§cFIX§r: This version will forcebly update mysql schema to add columns."
 	],
-	url:    "https://simsonic.github.io/rscMessages/target/rscMessages_v0.7.5b-b74.jar",
-	url_ci: "https://ci.methuselah.ru/job/rscMessages/lastSuccessfulBuild/artifact/target/rscMessages_v0.7.5b.jar"
+	url:    "https://simsonic.github.io/rscMessages/target/rscMessages_v0.7.6b-b76",
+	url_ci: "https://ci.methuselah.ru/job/rscMessages/lastSuccessfulBuild/artifact/target/rscMessages_v0.7.6b.jar"
 }
