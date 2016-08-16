@@ -37,7 +37,8 @@ public class BukkitSettings implements Settings
 		updateDB_V3V4 = false;
 		updateDB_V5V6 = false;
 		final FileConfiguration config = plugin.getConfig();
-		switch(config.getInt("internal.version", 1))
+		final int version = config.getInt("internal.version", 1);
+		switch(version)
 		{
 			/*
 			case 0:
@@ -72,9 +73,12 @@ public class BukkitSettings implements Settings
 				config.set("settings.special-list-for-newbies", null);
 			case 7:
 				BukkitPluginMain.consoleLog.info("[rscfjd] Updating config.yml version (v7 -> v8).");
-				updateDB_V2V3 = true;
-				updateDB_V3V4 = true;
-				updateDB_V5V6 = true;
+				if(version == 7)
+				{
+					updateDB_V2V3 = true;
+					updateDB_V3V4 = true;
+					updateDB_V5V6 = true;
+				}
 				config.set("internal.version", CONFIG_VER);
 			case CONFIG_VER:
 				// NEWEST VERSION
