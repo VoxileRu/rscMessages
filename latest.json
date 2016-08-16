@@ -4,6 +4,6 @@
 	notes: [
 		"§cFIX§r: This version will forcebly update mysql schema to add columns."
 	],
-	url:    "https://simsonic.github.io/rscMessages/target/rscMessages_v0.7.6b-b76",
+	url:    "https://simsonic.github.io/rscMessages/target/rscMessages_v0.7.6b-b76.jar",
 	url_ci: "https://ci.methuselah.ru/job/rscMessages/lastSuccessfulBuild/artifact/target/rscMessages_v0.7.6b.jar"
 }
